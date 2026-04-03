@@ -1,5 +1,5 @@
 from machine import UART
-import time
+import asyncio
 
 class HuskyLens:
     # --- CONSTANTS (Dựa trên tài liệu Protocol 0.5.1) ---
@@ -138,17 +138,15 @@ class HuskyLens:
         # print(f" -> [ARROW] ID:{obj_id} | Từ:({x_origin},{y_origin}) -> Đến:({x_target},{y_target})")
         return self.last_arrow
 
-    def get_block(self, target_id):
-        """Hàm đồng bộ để lấy dữ liệu block (thay thế cho việc sinh code từ blockly)"""
+    async def get_block(self, target_id):
         self.COMMAND_REQUEST()
-        time.sleep(0.05)
+        await asyncio.sleep_ms(50)
         self.process_incoming_data()
         return self.last_block.get(target_id, {"x": 0, "y": 0, "w": 0, "h": 0})
 
-    def get_arrow(self):
-        """Hàm đồng bộ để lấy dữ liệu arrow (thay thế cho việc sinh code từ blockly)"""
+    async def get_arrow(self):
         self.COMMAND_REQUEST()
-        time.sleep(0.05)
+        await asyncio.sleep_ms(50)
         self.process_incoming_data()
         return self.last_arrow if hasattr(self, 'last_arrow') else {"xo": 0, "yo": 0, "xt": 0, "yt": 0}
 

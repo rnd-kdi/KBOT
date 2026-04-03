@@ -2954,7 +2954,7 @@ Blockly.Blocks["huskylens_bounding_box"] = {
 Blockly.Python['huskylens_bounding_box'] = function (block) {
   var dataType = block.getFieldValue('DATA_TYPE');
   var objectId = block.getFieldValue('OBJECT_ID');
-  var code = 'husky.get_block(' + objectId + ')["' + dataType + '"]';
+  var code = '(await husky.get_block(' + objectId + '))["' + dataType + '"]';
   return [code, Blockly.Python.ORDER_MEMBER];
 };
 
@@ -2984,7 +2984,7 @@ Blockly.Blocks["huskylens_line_tracking"] = {
 
 Blockly.Python['huskylens_line_tracking'] = function (block) {
   var pointType = block.getFieldValue('POINT_TYPE');
-  var code = 'husky.get_arrow()["' + pointType + '"]';
+  var code = '(await husky.get_arrow())["' + pointType + '"]';
   return [code, Blockly.Python.ORDER_MEMBER];
 };
 
