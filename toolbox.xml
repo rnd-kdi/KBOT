@@ -3,6 +3,61 @@
     <block type="huskylens_uart_init" />
     <block type="huskylens_bounding_box" />
     <block type="huskylens_line_tracking" />
+
+    <sep gap="30"></sep>
+    <label text="KBOT Robot" web-class="blockLabelStyle"></label>
+    <block type="kbot_motor_init" />
+    <block type="kbot_set_encoder">
+      <value name="rpm">
+        <shadow type="math_number">
+          <field name="NUM">350</field>
+        </shadow>
+      </value>
+      <value name="ppr">
+        <shadow type="math_number">
+          <field name="NUM">11</field>
+        </shadow>
+      </value>
+      <value name="gears">
+        <shadow type="math_number">
+          <field name="NUM">34</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="kbot_set_speed">
+      <value name="speed">
+        <shadow type="math_number">
+          <field name="NUM">70</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="kbot_move">
+      <value name="speed">
+        <shadow type="math_number">
+          <field name="NUM">70</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="kbot_move_for">
+      <value name="speed">
+        <shadow type="math_number">
+          <field name="NUM">70</field>
+        </shadow>
+      </value>
+      <value name="amount">
+        <shadow type="math_number">
+          <field name="NUM">2</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="kbot_stop" />
+    <block type="kbot_motor_run">
+      <value name="speed">
+        <shadow type="math_number">
+          <field name="NUM">70</field>
+        </shadow>
+      </value>
+    </block>
   </category>
   <category id="robotics" name="ROBOTICS" colour="#717171" icon="robot">
     <category id="motor" name="{{ROBOTICS_CAT_MOTORS}}" colour="#0090f5" icon="undo">

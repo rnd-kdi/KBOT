@@ -2987,3 +2987,325 @@ Blockly.Python['huskylens_line_tracking'] = function (block) {
   var code = 'husky.get_arrow()["' + pointType + '"]';
   return [code, Blockly.Python.ORDER_MEMBER];
 };
+
+// KBOT Robot blocks ---------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------
+
+const KBotColorBlock = "#ff7513";
+
+// Block 1: kbot_motor_init
+Blockly.Blocks['kbot_motor_init'] = {
+  init: function () {
+    this.jsonInit({
+      type: "kbot_motor_init",
+      message0: "Khởi tạo động cơ Encoder %1 bánh %2",
+      previousStatement: null,
+      nextStatement: null,
+      args0: [
+        {
+          type: "field_dropdown",
+          name: "encoder",
+          options: [
+            ["E1", "E1"],
+            ["E2", "E2"]
+          ]
+        },
+        {
+          type: "field_dropdown",
+          name: "side",
+          options: [
+            ["TRÁI", "left"],
+            ["PHẢI", "right"]
+          ]
+        }
+      ],
+      inputsInline: true,
+      colour: KBotColorBlock,
+      tooltip: "Khởi tạo động cơ encoder cho KBOT",
+      helpUrl: ""
+    });
+  }
+};
+
+Blockly.Python['kbot_motor_init'] = function (block) {
+  var encoder = block.getFieldValue('encoder');
+  var side = block.getFieldValue('side');
+
+  Blockly.Python.definitions_['import_kbot'] = 'from kbot import *';
+  Blockly.Python.definitions_['import_robotics_motor'] = 'from motor import *';
+  Blockly.Python.definitions_['import_robotics_mdv2'] = 'from mdv2 import *';
+  Blockly.Python.definitions_['init_motor_driver_v2'] = 'md_v2 = MotorDriverV2()';
+
+  if (side == 'left') {
+    Blockly.Python.definitions_['init_kbot_left'] = 'kbot_left = DCMotor(md_v2, ' + encoder + ', reversed=True)';
+  } else {
+    Blockly.Python.definitions_['init_kbot_right'] = 'kbot_right = DCMotor(md_v2, ' + encoder + ')';
+  }
+
+  delete Blockly.Python.definitions_['init_kbot_robot'];
+  Blockly.Python.definitions_['init_kbot_robot'] = 'kbot = KBot(kbot_left, kbot_right)';
+  delete Blockly.Python.definitions_['deinit_kbot'];
+  Blockly.Python.definitions_['deinit_kbot'] = 'kbot.stop()';
+
+  return '';
+};
+
+// Block 2: kbot_set_encoder
+Blockly.Blocks['kbot_set_encoder'] = {
+  init: function () {
+    this.jsonInit({
+      type: "kbot_set_encoder",
+      message0: "KBOT cài đặt encoder bánh %1 RPM %2 PPR %3 tỉ số %4",
+      previousStatement: null,
+      nextStatement: null,
+      args0: [
+        {
+          type: "field_dropdown",
+          name: "side",
+          options: [
+            ["TRÁI", "left"],
+            ["PHẢI", "right"]
+          ]
+        },
+        {
+          type: "input_value",
+          name: "rpm",
+          check: "Number"
+        },
+        {
+          type: "input_value",
+          name: "ppr",
+          check: "Number"
+        },
+        {
+          type: "input_value",
+          name: "gears",
+          check: "Number"
+        }
+      ],
+      inputsInline: true,
+      colour: KBotColorBlock,
+      tooltip: "Cài đặt thông số encoder cho động cơ KBOT (cần thiết để dùng đơn vị cm)",
+      helpUrl: ""
+    });
+  }
+};
+
+Blockly.Python['kbot_set_encoder'] = function (block) {
+  var side = block.getFieldValue('side');
+  var rpm = Blockly.Python.valueToCode(block, 'rpm', Blockly.Python.ORDER_ATOMIC);
+  var ppr = Blockly.Python.valueToCode(block, 'ppr', Blockly.Python.ORDER_ATOMIC);
+  var gears = Blockly.Python.valueToCode(block, 'gears', Blockly.Python.ORDER_ATOMIC);
+  var motor = (side == 'left') ? 'kbot_left' : 'kbot_right';
+  var code = motor + ".set_encoder(rpm=" + rpm + ", ppr=" + ppr + ", gears=" + gears + ")\n";
+  return code;
+};
+
+// Block 3: kbot_set_speed
+Blockly.Blocks['kbot_set_speed'] = {
+  init: function () {
+    this.jsonInit({
+      type: "kbot_set_speed",
+      message0: "KBOT đặt tốc độ %1",
+      previousStatement: null,
+      nextStatement: null,
+      args0: [
+        {
+          type: "input_value",
+          name: "speed",
+          check: "Number"
+        }
+      ],
+      inputsInline: true,
+      colour: KBotColorBlock,
+      tooltip: "Đặt tốc độ mặc định cho KBOT",
+      helpUrl: ""
+    });
+  }
+};
+
+Blockly.Python['kbot_set_speed'] = function (block) {
+  var speed = Blockly.Python.valueToCode(block, 'speed', Blockly.Python.ORDER_ATOMIC);
+  var code = "kbot.speed(" + speed + ")\n";
+  return code;
+};
+
+// Block 4: kbot_move
+Blockly.Blocks['kbot_move'] = {
+  init: function () {
+    this.jsonInit({
+      type: "kbot_move",
+      message0: "KBOT %1 tốc độ %2",
+      previousStatement: null,
+      nextStatement: null,
+      args0: [
+        {
+          type: "field_dropdown",
+          name: "direction",
+          options: [
+            [{ src: "static/blocks/block_images/59043.svg", width: 15, height: 15, alt: "đi thẳng" }, "forward"],
+            [{ src: "static/blocks/block_images/959159.svg", width: 15, height: 15, alt: "đi lùi" }, "backward"],
+            [{ src: "static/blocks/block_images/860774.svg", width: 15, height: 15, alt: "xoay trái" }, "turn_left"],
+            [{ src: "static/blocks/block_images/74474.svg", width: 15, height: 15, alt: "xoay phải" }, "turn_right"]
+          ]
+        },
+        {
+          type: "input_value",
+          name: "speed",
+          check: "Number"
+        }
+      ],
+      inputsInline: true,
+      colour: KBotColorBlock,
+      tooltip: "KBOT di chuyển liên tục",
+      helpUrl: ""
+    });
+  }
+};
+
+Blockly.Python['kbot_move'] = function (block) {
+  var dir = block.getFieldValue('direction');
+  var speed = Blockly.Python.valueToCode(block, 'speed', Blockly.Python.ORDER_ATOMIC);
+  var code = "kbot." + dir + "(" + speed + ")\n";
+  return code;
+};
+
+// Block 5: kbot_move_for
+Blockly.Blocks['kbot_move_for'] = {
+  init: function () {
+    this.jsonInit({
+      type: "kbot_move_for",
+      message0: "KBOT %1 tốc độ %2 trong %3 %4 rồi %5",
+      previousStatement: null,
+      nextStatement: null,
+      args0: [
+        {
+          type: "field_dropdown",
+          name: "direction",
+          options: [
+            [{ src: "static/blocks/block_images/59043.svg", width: 15, height: 15, alt: "đi thẳng" }, "forward"],
+            [{ src: "static/blocks/block_images/959159.svg", width: 15, height: 15, alt: "đi lùi" }, "backward"],
+            [{ src: "static/blocks/block_images/860774.svg", width: 15, height: 15, alt: "xoay trái" }, "turn_left"],
+            [{ src: "static/blocks/block_images/74474.svg", width: 15, height: 15, alt: "xoay phải" }, "turn_right"]
+          ]
+        },
+        {
+          type: "input_value",
+          name: "speed",
+          check: "Number"
+        },
+        {
+          type: "input_value",
+          name: "amount",
+          check: "Number"
+        },
+        {
+          type: "field_dropdown",
+          name: "unit",
+          options: [
+            ["giây", "SECOND"],
+            ["cm", "CM"]
+          ]
+        },
+        {
+          type: "field_dropdown",
+          name: "then",
+          options: [
+            ["dừng lại", "STOP"],
+            ["khóa bánh", "BRAKE"]
+          ]
+        }
+      ],
+      inputsInline: true,
+      colour: KBotColorBlock,
+      tooltip: "KBOT di chuyển trong khoảng thời gian hoặc quãng đường rồi dừng",
+      helpUrl: ""
+    });
+  }
+};
+
+Blockly.Python['kbot_move_for'] = function (block) {
+  var dir = block.getFieldValue('direction');
+  var speed = Blockly.Python.valueToCode(block, 'speed', Blockly.Python.ORDER_ATOMIC);
+  var amount = Blockly.Python.valueToCode(block, 'amount', Blockly.Python.ORDER_ATOMIC);
+  var unit = block.getFieldValue('unit');
+  var then = block.getFieldValue('then');
+  var code = "await kbot." + dir + "_for(" + speed + ", " + amount + ", unit=" + unit + ", then=" + then + ")\n";
+  return code;
+};
+
+// Block 6: kbot_stop
+Blockly.Blocks['kbot_stop'] = {
+  init: function () {
+    this.jsonInit({
+      type: "kbot_stop",
+      message0: "KBOT %1",
+      previousStatement: null,
+      nextStatement: null,
+      args0: [
+        {
+          type: "field_dropdown",
+          name: "action",
+          options: [
+            ["dừng lại", "stop"],
+            ["khóa bánh", "brake"]
+          ]
+        }
+      ],
+      inputsInline: true,
+      colour: KBotColorBlock,
+      tooltip: "Dừng KBOT",
+      helpUrl: ""
+    });
+  }
+};
+
+Blockly.Python['kbot_stop'] = function (block) {
+  var action = block.getFieldValue('action');
+  var code = "kbot." + action + "()\n";
+  return code;
+};
+
+// Block 7: kbot_motor_run
+Blockly.Blocks['kbot_motor_run'] = {
+  init: function () {
+    this.jsonInit({
+      type: "kbot_motor_run",
+      message0: "Động cơ %1 quay tốc độ %2",
+      previousStatement: null,
+      nextStatement: null,
+      args0: [
+        {
+          type: "field_dropdown",
+          name: "motor",
+          options: [
+            ["E1", "E1"],
+            ["E2", "E2"],
+            ["M1", "M1"],
+            ["M2", "M2"],
+            ["M3", "M3"],
+            ["M4", "M4"]
+          ]
+        },
+        {
+          type: "input_value",
+          name: "speed",
+          check: "Number"
+        }
+      ],
+      inputsInline: true,
+      colour: KBotColorBlock,
+      tooltip: "Quay động cơ với tốc độ chỉ định (0 để dừng)",
+      helpUrl: ""
+    });
+  }
+};
+
+Blockly.Python['kbot_motor_run'] = function (block) {
+  var motor = block.getFieldValue('motor');
+  var speed = Blockly.Python.valueToCode(block, 'speed', Blockly.Python.ORDER_ATOMIC);
+  Blockly.Python.definitions_['import_robotics_mdv2'] = 'from mdv2 import *';
+  Blockly.Python.definitions_['init_motor_driver_v2'] = 'md_v2 = MotorDriverV2()';
+  var code = "md_v2.set_motors(" + motor + ", " + speed + ")\n";
+  return code;
+};
