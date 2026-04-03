@@ -2880,7 +2880,9 @@ Blockly.Python["robotics_follow_line_until"] = function (block) {
   return code;
 };
 
-
+// --------------------------------------------------------------------------------------------------------
+// HuskyLens blocks ---------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------
 
 const HuskyLensColorBlock = "#8B4513";
 
@@ -2895,12 +2897,12 @@ Blockly.Blocks['huskylens_uart_init'] = {
   init: function () {
     this.jsonInit({
       type: "huskylens_uart_init",
-      message0: "khởi tạo HuskyLens chân RX %1 chân TX %2 baudrate %3",
+      message0: "khởi tạo HuskyLens chân TX %1 chân RX %2 baudrate %3",
       previousStatement: null,
       nextStatement: null,
       args0: [
-        { type: "field_dropdown", name: "RX", options: digitalPins },
         { type: "field_dropdown", name: "TX", options: digitalPins },
+        { type: "field_dropdown", name: "RX", options: [["D4", "D4"], ["D3", "D3"], ["D5", "D5"], ["D6", "D6"], ["D7", "D7"], ["D8", "D8"], ["D9", "D9"], ["D10", "D10"], ["D11", "D11"], ["D12", "D12"], ["D13", "D13"], ["D0", "D0"], ["D1", "D1"], ["D2", "D2"]] },
         {
           type: "field_dropdown",
           name: "BAUDRATE",
