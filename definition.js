@@ -2998,7 +2998,7 @@ Blockly.Blocks['kbot_motor_init'] = {
   init: function () {
     this.jsonInit({
       type: "kbot_motor_init",
-      message0: "Khởi tạo động cơ Encoder %1 bánh %2",
+      message0: "Khởi tạo động cơ Encoder %1 bánh %2 đảo chiều %3",
       previousStatement: null,
       nextStatement: null,
       args0: [
@@ -3017,6 +3017,14 @@ Blockly.Blocks['kbot_motor_init'] = {
             ["TRÁI", "left"],
             ["PHẢI", "right"]
           ]
+        },
+        {
+          type: "field_dropdown",
+          name: "reverse",
+          options: [
+            ["KHÔNG", "no"],
+            ["CÓ", "yes"]
+          ]
         }
       ],
       inputsInline: true,
@@ -3030,16 +3038,30 @@ Blockly.Blocks['kbot_motor_init'] = {
 Blockly.Python['kbot_motor_init'] = function (block) {
   var encoder = block.getFieldValue('encoder');
   var side = block.getFieldValue('side');
+  var reverse = block.getFieldValue('reverse');
 
   Blockly.Python.definitions_['import_kbot'] = 'from kbot import *';
   Blockly.Python.definitions_['import_robotics_motor'] = 'from motor import *';
   Blockly.Python.definitions_['import_robotics_mdv2'] = 'from mdv2 import *';
   Blockly.Python.definitions_['init_motor_driver_v2'] = 'md_v2 = MotorDriverV2()';
 
+  // Default: left=reversed=True, right=reversed=False
+  // "đảo chiều = CÓ" flips the default
+  var defaultReversed = (side == 'left');
+  var finalReversed = (reverse == 'yes') ? !defaultReversed : defaultReversed;
+  var reversedStr = finalReversed ? 'True' : 'False';
+
+  var code = '';
   if (side == 'left') {
-    Blockly.Python.definitions_['init_kbot_left'] = 'kbot_left = DCMotor(md_v2, ' + encoder + ', reversed=True)';
+    Blockly.Python.definitions_['init_kbot_left'] = 'kbot_left = DCMotor(md_v2, ' + encoder + ', reversed=' + reversedStr + ')';
+    if (reverse == 'yes') {
+      code += 'kbot_left.reverse_encoder()\n';
+    }
   } else {
-    Blockly.Python.definitions_['init_kbot_right'] = 'kbot_right = DCMotor(md_v2, ' + encoder + ')';
+    Blockly.Python.definitions_['init_kbot_right'] = 'kbot_right = DCMotor(md_v2, ' + encoder + ', reversed=' + reversedStr + ')';
+    if (reverse == 'yes') {
+      code += 'kbot_right.reverse_encoder()\n';
+    }
   }
 
   delete Blockly.Python.definitions_['init_kbot_robot'];
@@ -3047,7 +3069,7 @@ Blockly.Python['kbot_motor_init'] = function (block) {
   delete Blockly.Python.definitions_['deinit_kbot'];
   Blockly.Python.definitions_['deinit_kbot'] = 'kbot.stop()';
 
-  return '';
+  return code;
 };
 
 // Block 2: kbot_set_encoder
@@ -3359,7 +3381,7 @@ Blockly.Blocks['kbot_motor_run'] = {
   init: function () {
     this.jsonInit({
       type: "kbot_motor_run",
-      message0: "Động cơ %1 quay tốc độ %2",
+      message0: "Động cơ %1 quay tốc độ %2 đảo chiều %3",
       previousStatement: null,
       nextStatement: null,
       args0: [
@@ -3379,6 +3401,14 @@ Blockly.Blocks['kbot_motor_run'] = {
           type: "input_value",
           name: "speed",
           check: "Number"
+        },
+        {
+          type: "field_dropdown",
+          name: "reverse",
+          options: [
+            ["KHÔNG", "no"],
+            ["CÓ", "yes"]
+          ]
         }
       ],
       inputsInline: true,
@@ -3392,8 +3422,10 @@ Blockly.Blocks['kbot_motor_run'] = {
 Blockly.Python['kbot_motor_run'] = function (block) {
   var motor = block.getFieldValue('motor');
   var speed = Blockly.Python.valueToCode(block, 'speed', Blockly.Python.ORDER_ATOMIC);
+  var reverse = block.getFieldValue('reverse');
   Blockly.Python.definitions_['import_robotics_mdv2'] = 'from mdv2 import *';
   Blockly.Python.definitions_['init_motor_driver_v2'] = 'md_v2 = MotorDriverV2()';
-  var code = "md_v2.set_motors(" + motor + ", " + speed + ")\n";
+  var speedExpr = (reverse == 'yes') ? '-(' + speed + ')' : speed;
+  var code = "md_v2.set_motors(" + motor + ", " + speedExpr + ")\n";
   return code;
 };

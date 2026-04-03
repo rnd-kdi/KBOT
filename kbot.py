@@ -70,6 +70,8 @@ class KBot:
             while ticks_ms() - start < duration:
                 await asyncio.sleep_ms(10)
         elif unit == CM:
+            if not self.left._encoder_enabled or not self.right._encoder_enabled:
+                return
             distance_mm = abs(amount) * 10
             self.left.reset_angle()
             self.right.reset_angle()
@@ -105,14 +107,8 @@ class KBot:
             return
         sensor = self._angle_sensor
         await sensor.reset()
-        start_heading = sensor.heading
         self.left.run(left_speed)
         self.right.run(right_speed)
-        while True:
-            diff = abs(sensor.heading - start_heading)
-            if diff > 180:
-                diff = 360 - diff
-            if diff >= abs(degree):
-                break
+        while abs(sensor.heading) < abs(degree):
             await asyncio.sleep_ms(10)
         await self.stop_then(then)
