@@ -1,5 +1,6 @@
 <xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display: none">
   <category id="kbot" name="KBOT" colour="#ff7513" icon="camera">
+    <label text="HuskyLens" web-class="blockLabelStyle"></label>
     <block type="huskylens_uart_init" />
     <block type="huskylens_bounding_box" />
     <block type="huskylens_line_tracking" />
@@ -51,6 +52,9 @@
       </value>
     </block>
     <block type="kbot_stop" />
+
+    <sep gap="30"></sep>
+    <label text="Test động cơ nhanh" web-class="blockLabelStyle"></label>
     <block type="kbot_motor_run">
       <value name="speed">
         <shadow type="math_number">
