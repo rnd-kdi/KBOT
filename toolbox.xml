@@ -1,8 +1,5 @@
 <xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display: none">
-  <category id="kbot" name="KBOT" colour="#ff7707" icon="camera">
-<!-- I WILL CODE LATER -->
-  </category>
-  <category id="huskylens" name="HuskyLens" colour="#8B4513" icon="camera">
+  <category id="kbot" name="KBOT" colour="#ff7513" icon="camera">
     <block type="huskylens_uart_init" />
     <block type="huskylens_bounding_box" />
     <block type="huskylens_line_tracking" />
