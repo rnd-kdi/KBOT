@@ -3266,7 +3266,95 @@ Blockly.Python['kbot_stop'] = function (block) {
   return code;
 };
 
-// Block 7: kbot_motor_run
+// Block 7: kbot_gyro_init
+Blockly.Blocks['kbot_gyro_init'] = {
+  init: function () {
+    this.jsonInit({
+      type: "kbot_gyro_init",
+      message0: "KBOT khởi tạo cảm biến góc, calib %1 mẫu",
+      previousStatement: null,
+      nextStatement: null,
+      args0: [
+        {
+          type: "input_value",
+          name: "samples",
+          check: "Number"
+        }
+      ],
+      inputsInline: true,
+      colour: KBotColorBlock,
+      tooltip: "Khởi tạo cảm biến góc MPU6050 cho KBOT (robot phải đứng yên khi calib)",
+      helpUrl: ""
+    });
+  }
+};
+
+Blockly.Python['kbot_gyro_init'] = function (block) {
+  var samples = Blockly.Python.valueToCode(block, 'samples', Blockly.Python.ORDER_ATOMIC);
+  Blockly.Python.definitions_['import_robotics_mpu6050'] = 'from mpu6050 import MPU6050';
+  Blockly.Python.definitions_['init_robotics_mpu6050'] = 'imu = MPU6050()';
+  Blockly.Python.definitions_['import_robotics_angle_sensor'] = 'from angle_sensor import AngleSensor';
+  Blockly.Python.definitions_['init_robotics_angle_sensor'] = 'angle_sensor = AngleSensor(imu)';
+  var code = 'angle_sensor.calibrate(' + samples + ')\n' +
+    'create_task(angle_sensor.run())\n' +
+    'kbot.set_angle_sensor(angle_sensor)\n';
+  return code;
+};
+
+// Block 8: kbot_turn_degree
+Blockly.Blocks['kbot_turn_degree'] = {
+  init: function () {
+    this.jsonInit({
+      type: "kbot_turn_degree",
+      message0: "KBOT %1 tốc độ %2 góc %3 độ rồi %4",
+      previousStatement: null,
+      nextStatement: null,
+      args0: [
+        {
+          type: "field_dropdown",
+          name: "direction",
+          options: [
+            [{ src: "static/blocks/block_images/860774.svg", width: 15, height: 15, alt: "xoay trái" }, "turn_left"],
+            [{ src: "static/blocks/block_images/74474.svg", width: 15, height: 15, alt: "xoay phải" }, "turn_right"]
+          ]
+        },
+        {
+          type: "input_value",
+          name: "speed",
+          check: "Number"
+        },
+        {
+          type: "input_value",
+          name: "degree",
+          check: "Number"
+        },
+        {
+          type: "field_dropdown",
+          name: "then",
+          options: [
+            ["dừng lại", "STOP"],
+            ["khóa bánh", "BRAKE"]
+          ]
+        }
+      ],
+      inputsInline: true,
+      colour: KBotColorBlock,
+      tooltip: "KBOT xoay theo góc (cần khởi tạo cảm biến góc trước)",
+      helpUrl: ""
+    });
+  }
+};
+
+Blockly.Python['kbot_turn_degree'] = function (block) {
+  var dir = block.getFieldValue('direction');
+  var speed = Blockly.Python.valueToCode(block, 'speed', Blockly.Python.ORDER_ATOMIC);
+  var degree = Blockly.Python.valueToCode(block, 'degree', Blockly.Python.ORDER_ATOMIC);
+  var then = block.getFieldValue('then');
+  var code = "await kbot." + dir + "_degree(" + speed + ", " + degree + ", then=" + then + ")\n";
+  return code;
+};
+
+// Block 9: kbot_motor_run
 Blockly.Blocks['kbot_motor_run'] = {
   init: function () {
     this.jsonInit({

@@ -90,3 +90,29 @@ class KBot:
 
     async def turn_left_for(self, speed, amount, unit=SECOND, then=STOP):
         await self._run_for(-speed, speed, amount, unit, then)
+
+    def set_angle_sensor(self, sensor):
+        self._angle_sensor = sensor
+
+    async def turn_right_degree(self, speed, degree, then=STOP):
+        await self._turn_degree(speed, -speed, degree, then)
+
+    async def turn_left_degree(self, speed, degree, then=STOP):
+        await self._turn_degree(-speed, speed, degree, then)
+
+    async def _turn_degree(self, left_speed, right_speed, degree, then=STOP):
+        if not hasattr(self, '_angle_sensor'):
+            return
+        sensor = self._angle_sensor
+        await sensor.reset()
+        start_heading = sensor.heading
+        self.left.run(left_speed)
+        self.right.run(right_speed)
+        while True:
+            diff = abs(sensor.heading - start_heading)
+            if diff > 180:
+                diff = 360 - diff
+            if diff >= abs(degree):
+                break
+            await asyncio.sleep_ms(10)
+        await self.stop_then(then)

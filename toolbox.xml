@@ -54,6 +54,28 @@
     <block type="kbot_stop" />
 
     <sep gap="30"></sep>
+    <label text="Xoay theo góc" web-class="blockLabelStyle"></label>
+    <block type="kbot_gyro_init">
+      <value name="samples">
+        <shadow type="math_number">
+          <field name="NUM">250</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="kbot_turn_degree">
+      <value name="speed">
+        <shadow type="math_number">
+          <field name="NUM">50</field>
+        </shadow>
+      </value>
+      <value name="degree">
+        <shadow type="math_number">
+          <field name="NUM">90</field>
+        </shadow>
+      </value>
+    </block>
+
+    <sep gap="30"></sep>
     <label text="Test động cơ nhanh" web-class="blockLabelStyle"></label>
     <block type="kbot_motor_run">
       <value name="speed">
