@@ -2897,23 +2897,12 @@ Blockly.Blocks['huskylens_uart_init'] = {
   init: function () {
     this.jsonInit({
       type: "huskylens_uart_init",
-      message0: "khởi tạo HuskyLens chân TX %1 chân RX %2 baudrate %3",
+      message0: "khởi tạo HuskyLens chân TX %1 chân RX %2",
       previousStatement: null,
       nextStatement: null,
       args0: [
         { type: "field_dropdown", name: "TX", options: digitalPins },
-        { type: "field_dropdown", name: "RX", options: [["D4", "D4"], ["D3", "D3"], ["D5", "D5"], ["D6", "D6"], ["D7", "D7"], ["D8", "D8"], ["D9", "D9"], ["D10", "D10"], ["D11", "D11"], ["D12", "D12"], ["D13", "D13"], ["D0", "D0"], ["D1", "D1"], ["D2", "D2"]] },
-        {
-          type: "field_dropdown",
-          name: "BAUDRATE",
-          options: [
-            ["9600", "9600"],
-            ["19200", "19200"],
-            ["38400", "38400"],
-            ["57600", "57600"],
-            ["115200", "115200"]
-          ]
-        }
+        { type: "field_dropdown", name: "RX", options: [["D4", "D4"], ["D3", "D3"], ["D5", "D5"], ["D6", "D6"], ["D7", "D7"], ["D8", "D8"], ["D9", "D9"], ["D10", "D10"], ["D11", "D11"], ["D12", "D12"], ["D13", "D13"], ["D0", "D0"], ["D1", "D1"], ["D2", "D2"]] }
       ],
       colour: HuskyLensColorBlock,
       tooltip: "khởi tạo kết nối HuskyLens qua UART",
@@ -2925,9 +2914,8 @@ Blockly.Blocks['huskylens_uart_init'] = {
 Blockly.Python['huskylens_uart_init'] = function (block) {
   var tx = block.getFieldValue('TX');
   var rx = block.getFieldValue('RX');
-  var baudrate = block.getFieldValue('BAUDRATE');
   Blockly.Python.definitions_['import_huskylens'] = 'from HuskyLens import HuskyLens';
-  Blockly.Python.definitions_['create_huskylens'] = 'husky = HuskyLens(uart_id=2, tx_pin=' + tx + '_PIN, rx_pin=' + rx + '_PIN, baudrate=' + baudrate + ')';
+  Blockly.Python.definitions_['create_huskylens'] = 'husky = HuskyLens(uart_id=2, tx_pin=' + tx + '_PIN, rx_pin=' + rx + '_PIN, baudrate=9600)';
   return '';
 };
 
