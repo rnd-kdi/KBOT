@@ -1,0 +1,31 @@
+{
+    "name": "KBOT by KDI EDU",
+    "description": "Thư viện để làm ứng dụng KBOT với HUSKYLENS và ORC CONTROL HUB",
+    "libs": [
+        "constants.py",
+        "angle_sensor.py",
+        "drivebase.py",
+        "gamepad.py",
+        "line_sensor.py",
+        "mdv1.py",
+        "mdv2.py",
+        "motor.py",
+        "mpu6050.py",
+        "mpu9250.py", 
+        "pcf8574.py",
+        "pid.py",     
+        "ps4_receiver.py",
+        "servo.py",
+        "vector3d.py",
+        "HuskyLens.py"
+    ],
+    "blocks": [
+        "definition.js"
+    ],
+    "toolbox": "toolbox.xml",
+    "languages": {
+        "en": "languages/en.js",
+        "vi": "languages/vi.js"
+    },
+    "poster": "poster.png"
+}
