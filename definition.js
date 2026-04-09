@@ -3411,6 +3411,126 @@ Blockly.Python['kbot_run_speed'] = function (block) {
   return code;
 };
 
+// Block: kbot_set_target_rpm
+Blockly.Blocks['kbot_set_target_rpm'] = {
+  init: function () {
+    this.jsonInit({
+      type: "kbot_set_target_rpm",
+      message0: "KBOT set RPM bánh TRÁI %1 bánh PHẢI %2",
+      previousStatement: null,
+      nextStatement: null,
+      args0: [
+        {
+          type: "input_value",
+          name: "left_rpm",
+          check: "Number"
+        },
+        {
+          type: "input_value",
+          name: "right_rpm",
+          check: "Number"
+        }
+      ],
+      inputsInline: true,
+      colour: KBotColorBlock,
+      tooltip: "Đặt tốc độ mong muốn (RPM) cho từng bánh. Cần dùng với block PID motor update trong vòng lặp",
+      helpUrl: ""
+    });
+  }
+};
+
+Blockly.Python['kbot_set_target_rpm'] = function (block) {
+  var left_rpm = Blockly.Python.valueToCode(block, 'left_rpm', Blockly.Python.ORDER_ATOMIC);
+  var right_rpm = Blockly.Python.valueToCode(block, 'right_rpm', Blockly.Python.ORDER_ATOMIC);
+  var code = "kbot.set_target_rpm(" + left_rpm + ", " + right_rpm + ")\n";
+  return code;
+};
+
+// Block: kbot_pid_update
+Blockly.Blocks['kbot_pid_update'] = {
+  init: function () {
+    this.jsonInit({
+      type: "kbot_pid_update",
+      message0: "KBOT PID motor update Kp %1 Ki %2 Kd %3",
+      previousStatement: null,
+      nextStatement: null,
+      args0: [
+        {
+          type: "input_value",
+          name: "kp",
+          check: "Number"
+        },
+        {
+          type: "input_value",
+          name: "ki",
+          check: "Number"
+        },
+        {
+          type: "input_value",
+          name: "kd",
+          check: "Number"
+        }
+      ],
+      inputsInline: true,
+      colour: KBotColorBlock,
+      tooltip: "Tính toán PID motor 1 bước. Đặt trong vòng lặp để liên tục điều chỉnh tốc độ chính xác theo RPM",
+      helpUrl: ""
+    });
+  }
+};
+
+Blockly.Python['kbot_pid_update'] = function (block) {
+  var kp = Blockly.Python.valueToCode(block, 'kp', Blockly.Python.ORDER_ATOMIC);
+  var ki = Blockly.Python.valueToCode(block, 'ki', Blockly.Python.ORDER_ATOMIC);
+  var kd = Blockly.Python.valueToCode(block, 'kd', Blockly.Python.ORDER_ATOMIC);
+  var code = "kbot.pid_update(" + kp + ", " + ki + ", " + kd + ")\n";
+  return code;
+};
+
+// Block: kbot_pid_stop
+Blockly.Blocks['kbot_pid_stop'] = {
+  init: function () {
+    this.jsonInit({
+      type: "kbot_pid_stop",
+      message0: "KBOT PID dừng motor",
+      previousStatement: null,
+      nextStatement: null,
+      args0: [],
+      inputsInline: true,
+      colour: KBotColorBlock,
+      tooltip: "Dừng motor và reset PID state",
+      helpUrl: ""
+    });
+  }
+};
+
+Blockly.Python['kbot_pid_stop'] = function (block) {
+  var code = "kbot.pid_stop()\n";
+  return code;
+};
+
+// Block: kbot_pid_reset
+Blockly.Blocks['kbot_pid_reset'] = {
+  init: function () {
+    this.jsonInit({
+      type: "kbot_pid_reset",
+      message0: "KBOT PID reset",
+      previousStatement: null,
+      nextStatement: null,
+      args0: [],
+      inputsInline: true,
+      colour: KBotColorBlock,
+      tooltip: "Reset PID state (không dừng motor)",
+      helpUrl: ""
+    });
+  }
+};
+
+Blockly.Python['kbot_pid_reset'] = function (block) {
+  var code = "kbot.pid_reset()\n";
+  return code;
+};
+
 // Block 10: kbot_motor_run
 Blockly.Blocks['kbot_motor_run'] = {
   init: function () {

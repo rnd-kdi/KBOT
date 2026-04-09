@@ -30,6 +30,11 @@ class HuskyLens:
         self.buffer = bytearray()
         self.last_block = {}
         self.last_arrow = {"xo": 0, "yo": 0, "xt": 0, "yt": 0, "id": 0}
+        self._fresh_blocks = set()
+        self._fresh_arrow = False
+        self._block_miss = {}
+        self._arrow_miss = 0
+        self.MISS_THRESHOLD = 20
 
     def validate_checksum(self, packet):
         """Kiểm tra tính toàn vẹn của gói tin"""
@@ -122,6 +127,7 @@ class HuskyLens:
         
         block_data = {"id": obj_id, "x": x_center, "y": y_center, "w": width, "h": height}
         self.last_block[obj_id] = block_data
+        self._fresh_blocks.add(obj_id)
         # print(f" -> [BLOCK] ID:{obj_id} | Center:({x_center},{y_center}) | Size:{width}x{height}")
         return block_data
 
@@ -135,20 +141,33 @@ class HuskyLens:
         obj_id   = data[8] + (data[9] << 8)
         
         self.last_arrow = {"id": obj_id, "xo": x_origin, "yo": y_origin, "xt": x_target, "yt": y_target}
+        self._fresh_arrow = True
         # print(f" -> [ARROW] ID:{obj_id} | Từ:({x_origin},{y_origin}) -> Đến:({x_target},{y_target})")
         return self.last_arrow
 
     async def get_block(self, target_id):
-        self.COMMAND_REQUEST()
-        await asyncio.sleep_ms(50)
+        self._fresh_blocks.clear()
         self.process_incoming_data()
-        return self.last_block.get(target_id, {"x": 0, "y": 0, "w": 0, "h": 0})
+        self.COMMAND_REQUEST()
+        if target_id in self._fresh_blocks:
+            self._block_miss[target_id] = 0
+            return self.last_block[target_id]
+        self._block_miss[target_id] = self._block_miss.get(target_id, 0) + 1
+        if self._block_miss[target_id] < self.MISS_THRESHOLD:
+            return self.last_block.get(target_id, {"x": 0, "y": 0, "w": 0, "h": 0})
+        return {"x": 0, "y": 0, "w": 0, "h": 0}
 
     async def get_arrow(self):
-        self.COMMAND_REQUEST()
-        await asyncio.sleep_ms(50)
+        self._fresh_arrow = False
         self.process_incoming_data()
-        return self.last_arrow if hasattr(self, 'last_arrow') else {"xo": 0, "yo": 0, "xt": 0, "yt": 0}
+        self.COMMAND_REQUEST()
+        if self._fresh_arrow:
+            self._arrow_miss = 0
+            return self.last_arrow
+        self._arrow_miss += 1
+        if self._arrow_miss < self.MISS_THRESHOLD:
+            return self.last_arrow
+        return {"xo": 0, "yo": 0, "xt": 0, "yt": 0, "id": 0}
 
     # ===============================================
     # CÁC HÀM TRỐNG (UNDEVELOPED / PLACEHOLDER)
