@@ -79,10 +79,9 @@ class HuskyLens:
             return None
 
     async def _request_and_read(self):
-        """Gửi lệnh và đọc phản hồi (dùng cho I2C vì cần đợi sau khi gửi)"""
+        """I2C: gửi lệnh → đợi → đọc phản hồi (không có buffer phần cứng)"""
         self.COMMAND_REQUEST()
-        if self.protocol == "i2c":
-            await asyncio.sleep_ms(50)
+        await asyncio.sleep_ms(50)
         self.process_incoming_data()
 
     def validate_checksum(self, packet):
@@ -195,7 +194,8 @@ class HuskyLens:
 
     async def get_block(self, target_id):
         self._fresh_blocks.clear()
-        await self._request_and_read()
+        self.process_incoming_data()
+        self.COMMAND_REQUEST()
         if target_id in self._fresh_blocks:
             self._block_miss[target_id] = 0
             return self.last_block[target_id]
@@ -206,7 +206,8 @@ class HuskyLens:
 
     async def get_arrow(self):
         self._fresh_arrow = False
-        await self._request_and_read()
+        self.process_incoming_data()
+        self.COMMAND_REQUEST()
         if self._fresh_arrow:
             self._arrow_miss = 0
             return self.last_arrow
