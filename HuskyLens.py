@@ -1,4 +1,4 @@
-from machine import UART
+from machine import UART, SoftI2C, Pin
 import asyncio
 
 class HuskyLens:
@@ -23,10 +23,24 @@ class HuskyLens:
     CMD_RETURN_IS_PRO = 0x3B
     CMD_RETURN_NEED_PRO = 0x3E
 
-    def __init__(self, uart_id=2, tx_pin=23, rx_pin=19, baudrate=9600):
-        """Khởi tạo kết nối UART"""
-        # Lưu ý: Tùy dòng chip (ESP32/Microbit) mà cấu hình UART có thể khác nhau đôi chút
-        self.uart = UART(uart_id, baudrate=baudrate, tx=tx_pin, rx=rx_pin, timeout=10)
+    HUSKYLENS_I2C_ADDRESS = 0x32
+
+    def __init__(self, protocol="uart", uart_id=2, tx_pin=23, rx_pin=19, baudrate=9600,
+                 sda_pin=None, scl_pin=None, i2c_addr=0x32):
+        """Khởi tạo kết nối UART hoặc I2C
+
+        protocol: "uart" hoặc "i2c"
+        UART: uart_id, tx_pin, rx_pin, baudrate
+        I2C:  sda_pin, scl_pin, i2c_addr (mặc định 0x32)
+        """
+        self.protocol = protocol
+
+        if protocol == "i2c":
+            self.i2c = SoftI2C(scl=Pin(scl_pin), sda=Pin(sda_pin), freq=100000)
+            self.i2c_addr = i2c_addr
+        else:
+            self.uart = UART(uart_id, baudrate=baudrate, tx=tx_pin, rx=rx_pin, timeout=10)
+
         self.buffer = bytearray()
         self.last_block = {}
         self.last_arrow = {"xo": 0, "yo": 0, "xt": 0, "yt": 0, "id": 0}
@@ -35,6 +49,29 @@ class HuskyLens:
         self._block_miss = {}
         self._arrow_miss = 0
         self.MISS_THRESHOLD = 20
+
+    def _send(self, data):
+        """Gửi dữ liệu qua UART hoặc I2C"""
+        if self.protocol == "i2c":
+            self.i2c.writeto(self.i2c_addr, data)
+        else:
+            self.uart.write(data)
+
+    def _receive(self):
+        """Đọc dữ liệu từ UART hoặc I2C"""
+        if self.protocol == "i2c":
+            try:
+                data = self.i2c.readfrom(self.i2c_addr, 16)
+                # Bỏ qua nếu toàn byte 0
+                if data and any(b != 0 for b in data):
+                    return data
+            except:
+                pass
+            return None
+        else:
+            if self.uart.any():
+                return self.uart.read()
+            return None
 
     def validate_checksum(self, packet):
         """Kiểm tra tính toàn vẹn của gói tin"""
@@ -46,15 +83,14 @@ class HuskyLens:
         """Gửi lệnh 0x20 để lấy dữ liệu (Block + Arrow)"""
         # 55 AA 11 00 20 30
         cmd = bytes([self.HEADER1, self.HEADER2, self.ADDRESS, 0x00, self.CMD_REQUEST, 0x30])
-        self.uart.write(cmd)
+        self._send(cmd)
 
     def process_incoming_data(self):
         """Hàm chính để đọc và phân tích buffer"""
-        # Đọc dữ liệu mới từ UART vào buffer
-        if self.uart.any():
-            data = self.uart.read()
-            if data:
-                self.buffer.extend(data)
+        # Đọc dữ liệu mới từ UART hoặc I2C vào buffer
+        data = self._receive()
+        if data:
+            self.buffer.extend(data)
 
         while len(self.buffer) >= 5:
             # 1. Kiểm tra Header
@@ -190,7 +226,7 @@ class HuskyLens:
     # ===============================================
     def COMMAND_REQUEST_KNOCK(self):
         cmd = bytes([self.HEADER1, self.HEADER2, self.ADDRESS, 0x00, self.CMD_REQUEST_KNOCK, 0x3C])
-        self.uart.write(cmd)
+        self._send(cmd)
 
     def COMMAND_REQUEST_ALGORITHM(self, alg_id): pass
     def COMMAND_REQUEST_CUSTOM_TEXT(self, text, x, y): pass
@@ -198,7 +234,12 @@ class HuskyLens:
 
 
 # # --- DEMO ---
-# husky = HuskyLens(uart_id=2, tx_pin=D4_PIN, rx_pin=D3_PIN)
+# # UART (mặc định)
+# husky = HuskyLens(protocol="uart", uart_id=2, tx_pin=D4_PIN, rx_pin=D3_PIN)
+#
+# # I2C
+# from setting import SDA_PIN, SCL_PIN
+# husky = HuskyLens(protocol="i2c", sda_pin=SDA_PIN, scl_pin=SCL_PIN)
 
 # print("--- Bắt đầu HuskyLens Library Demo ---")
 

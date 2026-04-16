@@ -2915,7 +2915,29 @@ Blockly.Python['huskylens_uart_init'] = function (block) {
   var tx = block.getFieldValue('TX');
   var rx = block.getFieldValue('RX');
   Blockly.Python.definitions_['import_huskylens'] = 'from HuskyLens import HuskyLens';
-  Blockly.Python.definitions_['create_huskylens'] = 'husky = HuskyLens(uart_id=2, tx_pin=' + tx + '_PIN, rx_pin=' + rx + '_PIN, baudrate=9600)';
+  Blockly.Python.definitions_['create_huskylens'] = 'husky = HuskyLens(protocol="uart", uart_id=2, tx_pin=' + tx + '_PIN, rx_pin=' + rx + '_PIN, baudrate=9600)';
+  return '';
+};
+
+Blockly.Blocks['huskylens_i2c_init'] = {
+  init: function () {
+    this.jsonInit({
+      type: "huskylens_i2c_init",
+      message0: "Khởi tạo HuskyLens I2C",
+      previousStatement: null,
+      nextStatement: null,
+      args0: [],
+      colour: HuskyLensColorBlock,
+      tooltip: "Khởi tạo kết nối HuskyLens qua I2C (địa chỉ 0x32)",
+      helpUrl: ""
+    });
+  }
+};
+
+Blockly.Python['huskylens_i2c_init'] = function (block) {
+  Blockly.Python.definitions_['import_huskylens'] = 'from HuskyLens import HuskyLens';
+  Blockly.Python.definitions_['import_setting_i2c'] = 'from setting import SDA_PIN, SCL_PIN';
+  Blockly.Python.definitions_['create_huskylens'] = 'husky = HuskyLens(protocol="i2c", sda_pin=SDA_PIN, scl_pin=SCL_PIN)';
   return '';
 };
 
