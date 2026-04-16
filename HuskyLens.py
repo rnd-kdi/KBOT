@@ -1,4 +1,5 @@
 from machine import UART, SoftI2C, Pin
+from time import sleep_ms
 import asyncio
 
 class HuskyLens:
@@ -61,10 +62,14 @@ class HuskyLens:
         """Đọc dữ liệu từ UART hoặc I2C"""
         if self.protocol == "i2c":
             try:
-                data = self.i2c.readfrom(self.i2c_addr, 16)
-                # Bỏ qua nếu toàn byte 0
+                # Đọc nhiều byte để nhận đủ gói tin (INFO + BLOCK/ARROW)
+                data = self.i2c.readfrom(self.i2c_addr, 64)
                 if data and any(b != 0 for b in data):
-                    return data
+                    # Cắt bỏ phần byte 0 ở cuối
+                    end = len(data)
+                    while end > 0 and data[end - 1] == 0:
+                        end -= 1
+                    return data[:end] if end > 0 else None
             except:
                 pass
             return None
@@ -72,6 +77,13 @@ class HuskyLens:
             if self.uart.any():
                 return self.uart.read()
             return None
+
+    async def _request_and_read(self):
+        """Gửi lệnh và đọc phản hồi (dùng cho I2C vì cần đợi sau khi gửi)"""
+        self.COMMAND_REQUEST()
+        if self.protocol == "i2c":
+            await asyncio.sleep_ms(50)
+        self.process_incoming_data()
 
     def validate_checksum(self, packet):
         """Kiểm tra tính toàn vẹn của gói tin"""
@@ -183,8 +195,7 @@ class HuskyLens:
 
     async def get_block(self, target_id):
         self._fresh_blocks.clear()
-        self.process_incoming_data()
-        self.COMMAND_REQUEST()
+        await self._request_and_read()
         if target_id in self._fresh_blocks:
             self._block_miss[target_id] = 0
             return self.last_block[target_id]
@@ -195,8 +206,7 @@ class HuskyLens:
 
     async def get_arrow(self):
         self._fresh_arrow = False
-        self.process_incoming_data()
-        self.COMMAND_REQUEST()
+        await self._request_and_read()
         if self._fresh_arrow:
             self._arrow_miss = 0
             return self.last_arrow
