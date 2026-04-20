@@ -1,7 +1,6 @@
 <xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display: none">
   <category id="kbot" name="KBOT" colour="#ff7513" icon="camera">
     <label text="HuskyLens" web-class="blockLabelStyle"></label>
-    <block type="huskylens_uart_init" />
     <block type="huskylens_i2c_init" />
     <block type="huskylens_bounding_box" />
     <block type="huskylens_line_tracking" />

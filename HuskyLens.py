@@ -1,5 +1,4 @@
 from machine import UART, SoftI2C, Pin
-from time import sleep_ms
 import asyncio
 
 class HuskyLens:
@@ -77,12 +76,6 @@ class HuskyLens:
             if self.uart.any():
                 return self.uart.read()
             return None
-
-    async def _request_and_read(self):
-        """I2C: gửi lệnh → đợi → đọc phản hồi (không có buffer phần cứng)"""
-        self.COMMAND_REQUEST()
-        await asyncio.sleep_ms(50)
-        self.process_incoming_data()
 
     def validate_checksum(self, packet):
         """Kiểm tra tính toàn vẹn của gói tin"""
