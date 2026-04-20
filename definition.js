@@ -2941,11 +2941,42 @@ Blockly.Python['huskylens_i2c_init'] = function (block) {
   return '';
 };
 
+Blockly.Blocks["huskylens_update_block"] = {
+  init: function () {
+    this.jsonInit({
+      type: "huskylens_update_block",
+      colour: HuskyLensColorBlock,
+      tooltip: "Cập nhật dữ liệu vật thể từ HuskyLens (gọi 1 lần mỗi vòng lặp)",
+      message0: "Cập nhật vật thể ID %1",
+      previousStatement: null,
+      nextStatement: null,
+      args0: [
+        {
+          type: "field_dropdown",
+          name: "OBJECT_ID",
+          options: [
+            ["1", "1"], ["2", "2"], ["3", "3"], ["4", "4"], ["5", "5"],
+            ["6", "6"], ["7", "7"], ["8", "8"], ["9", "9"], ["10", "10"]
+          ]
+        }
+      ],
+      helpUrl: ""
+    });
+  }
+};
+
+Blockly.Python['huskylens_update_block'] = function (block) {
+  var objectId = block.getFieldValue('OBJECT_ID');
+  Blockly.Python.definitions_['huskylens_block_var_' + objectId] = '_husky_block_' + objectId + ' = {"x": 0, "y": 0, "w": 0, "h": 0}';
+  var code = '_husky_block_' + objectId + ' = await husky.get_block(' + objectId + ')\n';
+  return code;
+};
+
 Blockly.Blocks["huskylens_bounding_box"] = {
   init: function () {
     this.jsonInit({
       colour: HuskyLensColorBlock,
-      tooltip: "Đọc thông số khung bao vật thể theo ID",
+      tooltip: "Đọc thông số khung bao vật thể theo ID (cần đặt khối Cập nhật trước)",
       message0: "Đọc %1 của vật thể ID %2",
       output: "Number",
       args0: [
@@ -2963,8 +2994,8 @@ Blockly.Blocks["huskylens_bounding_box"] = {
           type: "field_dropdown",
           name: "OBJECT_ID",
           options: [
-            ["0", "0"], ["1", "1"], ["2", "2"], ["3", "3"], ["4", "4"],
-            ["5", "5"], ["6", "6"], ["7", "7"], ["8", "8"], ["9", "9"], ["10", "10"]
+            ["1", "1"], ["2", "2"], ["3", "3"], ["4", "4"], ["5", "5"],
+            ["6", "6"], ["7", "7"], ["8", "8"], ["9", "9"], ["10", "10"]
           ]
         }
       ],
@@ -2976,15 +3007,36 @@ Blockly.Blocks["huskylens_bounding_box"] = {
 Blockly.Python['huskylens_bounding_box'] = function (block) {
   var dataType = block.getFieldValue('DATA_TYPE');
   var objectId = block.getFieldValue('OBJECT_ID');
-  var code = '(await husky.get_block(' + objectId + '))["' + dataType + '"]';
+  var code = '_husky_block_' + objectId + '["' + dataType + '"]';
   return [code, Blockly.Python.ORDER_MEMBER];
+};
+
+Blockly.Blocks["huskylens_update_arrow"] = {
+  init: function () {
+    this.jsonInit({
+      type: "huskylens_update_arrow",
+      colour: HuskyLensColorBlock,
+      tooltip: "Cập nhật dữ liệu đường kẻ từ HuskyLens (gọi 1 lần mỗi vòng lặp)",
+      message0: "Cập nhật đường kẻ",
+      previousStatement: null,
+      nextStatement: null,
+      args0: [],
+      helpUrl: ""
+    });
+  }
+};
+
+Blockly.Python['huskylens_update_arrow'] = function (block) {
+  Blockly.Python.definitions_['huskylens_arrow_var'] = '_husky_arrow = {"xo": 0, "yo": 0, "xt": 0, "yt": 0}';
+  var code = '_husky_arrow = await husky.get_arrow()\n';
+  return code;
 };
 
 Blockly.Blocks["huskylens_line_tracking"] = {
   init: function () {
     this.jsonInit({
       colour: HuskyLensColorBlock,
-      tooltip: "Đọc tọa độ điểm đầu hoặc đuôi đường kẻ",
+      tooltip: "Đọc tọa độ điểm đầu hoặc đuôi đường kẻ (cần đặt khối Cập nhật trước)",
       message0: "Đọc tọa độ %1 đường kẻ",
       output: "Number",
       args0: [
@@ -3006,7 +3058,7 @@ Blockly.Blocks["huskylens_line_tracking"] = {
 
 Blockly.Python['huskylens_line_tracking'] = function (block) {
   var pointType = block.getFieldValue('POINT_TYPE');
-  var code = '(await husky.get_arrow())["' + pointType + '"]';
+  var code = '_husky_arrow["' + pointType + '"]';
   return [code, Blockly.Python.ORDER_MEMBER];
 };
 
