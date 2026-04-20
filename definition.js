@@ -2968,7 +2968,7 @@ Blockly.Blocks["huskylens_update_block"] = {
 Blockly.Python['huskylens_update_block'] = function (block) {
   var objectId = block.getFieldValue('OBJECT_ID');
   Blockly.Python.definitions_['huskylens_block_var_' + objectId] = '_husky_block_' + objectId + ' = {"x": 0, "y": 0, "w": 0, "h": 0}';
-  var code = '_husky_block_' + objectId + ' = await husky.get_block(' + objectId + ')\n';
+  var code = 'global _husky_block_' + objectId + '\n_husky_block_' + objectId + ' = await husky.get_block(' + objectId + ')\n';
   return code;
 };
 
@@ -3028,7 +3028,7 @@ Blockly.Blocks["huskylens_update_arrow"] = {
 
 Blockly.Python['huskylens_update_arrow'] = function (block) {
   Blockly.Python.definitions_['huskylens_arrow_var'] = '_husky_arrow = {"xo": 0, "yo": 0, "xt": 0, "yt": 0}';
-  var code = '_husky_arrow = await husky.get_arrow()\n';
+  var code = 'global _husky_arrow\n_husky_arrow = await husky.get_arrow()\n';
   return code;
 };
 
