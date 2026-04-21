@@ -2893,32 +2893,6 @@ var digitalPins = [
   ["D0", "D0"], ["D1", "D1"], ["D2", "D2"]
 ];
 
-Blockly.Blocks['huskylens_uart_init'] = {
-  init: function () {
-    this.jsonInit({
-      type: "huskylens_uart_init",
-      message0: "Khởi tạo HuskyLens chân TX %1 chân RX %2",
-      previousStatement: null,
-      nextStatement: null,
-      args0: [
-        { type: "field_dropdown", name: "TX", options: digitalPins },
-        { type: "field_dropdown", name: "RX", options: [["D4", "D4"], ["D3", "D3"], ["D5", "D5"], ["D6", "D6"], ["D7", "D7"], ["D8", "D8"], ["D9", "D9"], ["D10", "D10"], ["D11", "D11"], ["D12", "D12"], ["D13", "D13"], ["D0", "D0"], ["D1", "D1"], ["D2", "D2"]] }
-      ],
-      colour: HuskyLensColorBlock,
-      tooltip: "Khởi tạo kết nối HuskyLens qua UART",
-      helpUrl: ""
-    });
-  }
-};
-
-Blockly.Python['huskylens_uart_init'] = function (block) {
-  var tx = block.getFieldValue('TX');
-  var rx = block.getFieldValue('RX');
-  Blockly.Python.definitions_['import_huskylens'] = 'from HuskyLens import HuskyLens';
-  Blockly.Python.definitions_['create_huskylens'] = 'husky = HuskyLens(protocol="uart", uart_id=2, tx_pin=' + tx + '_PIN, rx_pin=' + rx + '_PIN, baudrate=9600)';
-  return '';
-};
-
 Blockly.Blocks['huskylens_i2c_init'] = {
   init: function () {
     this.jsonInit({
@@ -3547,7 +3521,7 @@ Blockly.Blocks['kbot_pid_update'] = {
       ],
       inputsInline: true,
       colour: KBotColorBlock,
-      tooltip: "Tính toán PID motor 1 bước. Đặt trong vòng lặp để liên tục điều chỉnh tốc độ chính xác theo RPM",
+      tooltip: "Cài đặt thông số PID cho motor (tự động chạy khi set_target_rpm)",
       helpUrl: ""
     });
   }
@@ -3557,7 +3531,7 @@ Blockly.Python['kbot_pid_update'] = function (block) {
   var kp = Blockly.Python.valueToCode(block, 'kp', Blockly.Python.ORDER_ATOMIC);
   var ki = Blockly.Python.valueToCode(block, 'ki', Blockly.Python.ORDER_ATOMIC);
   var kd = Blockly.Python.valueToCode(block, 'kd', Blockly.Python.ORDER_ATOMIC);
-  var code = "kbot.pid_update(" + kp + ", " + ki + ", " + kd + ")\n";
+  var code = "kbot.pid_set(" + kp + ", " + ki + ", " + kd + ")\n";
   return code;
 };
 

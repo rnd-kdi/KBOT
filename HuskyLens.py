@@ -7,13 +7,9 @@ class HuskyLens:
     ADDRESS = 0x11
 
     CMD_REQUEST = 0x20
-    CMD_REQUEST_KNOCK = 0x2C
-    CMD_REQUEST_ALGORITHM = 0x2D
 
-    CMD_RETURN_INFO = 0x29
     CMD_RETURN_BLOCK = 0x2A
     CMD_RETURN_ARROW = 0x2B
-    CMD_RETURN_OK = 0x2E
 
     def __init__(self, sda_pin, scl_pin, i2c_addr=0x32):
         self.i2c = SoftI2C(scl=Pin(scl_pin), sda=Pin(sda_pin), freq=100000)
@@ -36,14 +32,14 @@ class HuskyLens:
             try:
                 self.i2c.readfrom(self.i2c_addr, 1)
                 return
-            except:
+            except OSError:
                 sleep_ms(200)
         print("[HuskyLens] Không tìm thấy thiết bị I2C!")
 
     def _send(self, data):
         try:
             self.i2c.writeto(self.i2c_addr, data)
-        except:
+        except OSError:
             pass
 
     def _receive(self):
@@ -60,7 +56,7 @@ class HuskyLens:
                     pos += pkt_len
                 if pos > 0:
                     return self._buf[:pos]
-        except:
+        except OSError:
             pass
         return None
 
@@ -113,6 +109,7 @@ class HuskyLens:
         cmd = bytes([self.HEADER1, self.HEADER2, self.ADDRESS, 0x00, self.CMD_REQUEST, 0x30])
         self._send(cmd)
 
+    # async for Blockly await compatibility (I2C ops are blocking ~9ms)
     async def get_block(self, target_id):
         self._fresh_blocks.clear()
         self._parse()

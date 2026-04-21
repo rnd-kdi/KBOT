@@ -22,6 +22,10 @@ class KBot:
         self._integral_right = 0
         self._max_integral = 400
         self._max_pid_output = 60
+        self._kp = 1.5
+        self._ki = 0.07
+        self._kd = 0.5
+        self._pid_running = False
 
     def speed(self, speed):
         self._speed = speed
@@ -136,8 +140,21 @@ class KBot:
             self._last_error_right = 0
         self._target_left = left_rpm
         self._target_right = right_rpm
+        if not self._pid_running:
+            self._pid_running = True
+            asyncio.create_task(self._pid_loop())
 
-    def pid_update(self, kp, ki, kd):
+    def pid_set(self, kp, ki, kd):
+        self._kp = kp
+        self._ki = ki
+        self._kd = kd
+
+    async def _pid_loop(self):
+        while self._pid_running:
+            self._pid_update()
+            await asyncio.sleep_ms(50)
+
+    def _pid_update(self):
         if not self.left._encoder_enabled or not self.right._encoder_enabled:
             self.left.run(self._target_left)
             self.right.run(self._target_right)
@@ -148,8 +165,8 @@ class KBot:
         self._integral_right = max(-self._max_integral, min(self._max_integral, self._integral_right + self._error_right))
         d_left = self._error_left - self._last_error_left
         d_right = self._error_right - self._last_error_right
-        pid_left = kp * self._error_left + ki * self._integral_left + kd * d_left
-        pid_right = kp * self._error_right + ki * self._integral_right + kd * d_right
+        pid_left = self._kp * self._error_left + self._ki * self._integral_left + self._kd * d_left
+        pid_right = self._kp * self._error_right + self._ki * self._integral_right + self._kd * d_right
         pid_left = max(-self._max_pid_output, min(self._max_pid_output, pid_left))
         pid_right = max(-self._max_pid_output, min(self._max_pid_output, pid_right))
         self._last_error_left = self._error_left
@@ -166,6 +183,7 @@ class KBot:
         self._integral_right = 0
 
     def pid_stop(self):
+        self._pid_running = False
         self._target_left = 0
         self._target_right = 0
         self.pid_reset()
