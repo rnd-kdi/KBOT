@@ -3040,6 +3040,10 @@ Blockly.Python['huskylens_line_tracking'] = function (block) {
 // --------------------------------------------------------------------------------------------------------
 
 const KBotColorBlock = "#ff7513";
+const KBotPIDColor = "#00a86b";
+const KBotTrackColor = "#9b59b6";
+const KBotGyroColor = "#2980b9";
+const KBotTestColor = "#7f8c8d";
 
 // Block 1: kbot_motor_init
 Blockly.Blocks['kbot_motor_init'] = {
@@ -3352,7 +3356,7 @@ Blockly.Blocks['kbot_gyro_init'] = {
         }
       ],
       inputsInline: true,
-      colour: KBotColorBlock,
+      colour: KBotGyroColor,
       tooltip: "Khởi tạo cảm biến góc MPU6050 cho KBOT (robot phải đứng yên khi calib)",
       helpUrl: ""
     });
@@ -3408,7 +3412,7 @@ Blockly.Blocks['kbot_turn_degree'] = {
         }
       ],
       inputsInline: true,
-      colour: KBotColorBlock,
+      colour: KBotGyroColor,
       tooltip: "KBOT xoay theo góc (cần khởi tạo cảm biến góc trước)",
       helpUrl: ""
     });
@@ -3480,8 +3484,8 @@ Blockly.Blocks['kbot_set_target_rpm'] = {
         }
       ],
       inputsInline: true,
-      colour: KBotColorBlock,
-      tooltip: "Đặt tốc độ mong muốn (RPM) cho từng bánh. Cần dùng với block PID motor update trong vòng lặp",
+      colour: KBotPIDColor,
+      tooltip: "Đặt tốc độ mong muốn (RPM) cho từng bánh",
       helpUrl: ""
     });
   }
@@ -3520,7 +3524,7 @@ Blockly.Blocks['kbot_pid_update'] = {
         }
       ],
       inputsInline: true,
-      colour: KBotColorBlock,
+      colour: KBotPIDColor,
       tooltip: "Cài đặt thông số PID cho motor (tự động chạy khi set_target_rpm)",
       helpUrl: ""
     });
@@ -3545,7 +3549,7 @@ Blockly.Blocks['kbot_pid_stop'] = {
       nextStatement: null,
       args0: [],
       inputsInline: true,
-      colour: KBotColorBlock,
+      colour: KBotPIDColor,
       tooltip: "Dừng motor và reset PID state",
       helpUrl: ""
     });
@@ -3567,7 +3571,7 @@ Blockly.Blocks['kbot_pid_reset'] = {
       nextStatement: null,
       args0: [],
       inputsInline: true,
-      colour: KBotColorBlock,
+      colour: KBotPIDColor,
       tooltip: "Reset PID state (không dừng motor)",
       helpUrl: ""
     });
@@ -3600,7 +3604,7 @@ Blockly.Blocks['kbot_track_set_pid'] = {
         { type: "input_value", name: "kd", check: "Number" }
       ],
       inputsInline: true,
-      colour: KBotColorBlock,
+      colour: KBotTrackColor,
       tooltip: "Cài đặt thông số PID cho trục X (lái) hoặc Y (tiến/lùi)",
       helpUrl: ""
     });
@@ -3628,7 +3632,7 @@ Blockly.Blocks['kbot_track_set_speed'] = {
         { type: "input_value", name: "max_speed", check: "Number" }
       ],
       inputsInline: true,
-      colour: KBotColorBlock,
+      colour: KBotTrackColor,
       tooltip: "Cài đặt tốc độ tối thiểu và tối đa cho tracking",
       helpUrl: ""
     });
@@ -3663,7 +3667,7 @@ Blockly.Blocks['kbot_track_update'] = {
         { type: "input_value", name: "target", check: "Number" }
       ],
       inputsInline: true,
-      colour: KBotColorBlock,
+      colour: KBotTrackColor,
       tooltip: "Tính PID tracking theo trục X (lái) hoặc Y (tiến/lùi) từ dữ liệu HuskyLens",
       helpUrl: ""
     });
@@ -3692,7 +3696,7 @@ Blockly.Blocks['kbot_track_speed'] = {
           options: [["vT (trái)", "track_vt"], ["vP (phải)", "track_vp"]]
         }
       ],
-      colour: KBotColorBlock,
+      colour: KBotTrackColor,
       tooltip: "Đọc tốc độ tracking: vT (bánh trái) hoặc vP (bánh phải)",
       helpUrl: ""
     });
@@ -3740,7 +3744,7 @@ Blockly.Blocks['kbot_motor_run'] = {
         }
       ],
       inputsInline: true,
-      colour: KBotColorBlock,
+      colour: KBotTestColor,
       tooltip: "Quay động cơ với tốc độ chỉ định (0 để dừng)",
       helpUrl: ""
     });
