@@ -26,6 +26,23 @@ class KBot:
         self._ki = 0.07
         self._kd = 0.5
         self._pid_running = False
+        # Vision tracking PID state
+        self._tx_kp = 0.23
+        self._tx_ki = 0
+        self._tx_kd = 0.4
+        self._ty_kp = 0.55
+        self._ty_ki = 0
+        self._ty_kd = 0.52
+        self._tx_lerr = 0
+        self._tx_int = 0
+        self._ty_lerr = 0
+        self._ty_int = 0
+        self._tx_out = 0
+        self._ty_out = 0
+        self._t_min = 25
+        self._t_max = 80
+        self._t_dz = 5
+        self._t_imax = 50
 
     def speed(self, speed):
         self._speed = speed
@@ -189,3 +206,54 @@ class KBot:
         self.pid_reset()
         self.left.stop()
         self.right.stop()
+
+    # ============ Vision Tracking PID ============
+
+    def track_set_pid_x(self, kp, ki, kd):
+        self._tx_kp = kp
+        self._tx_ki = ki
+        self._tx_kd = kd
+
+    def track_set_pid_y(self, kp, ki, kd):
+        self._ty_kp = kp
+        self._ty_ki = ki
+        self._ty_kd = kd
+
+    def track_set_speed(self, min_speed, max_speed):
+        self._t_min = min_speed
+        self._t_max = max_speed
+
+    def track_x(self, current_x, target_x):
+        e = current_x - target_x
+        if abs(e) <= self._t_dz:
+            e = 0
+        self._tx_int = max(-self._t_imax, min(self._t_imax, self._tx_int + e))
+        d = e - self._tx_lerr
+        self._tx_out = self._tx_kp * e + self._tx_ki * self._tx_int + self._tx_kd * d
+        self._tx_lerr = e
+
+    def track_y(self, current_y, target_y):
+        e = target_y - current_y
+        if abs(e) <= self._t_dz:
+            e = 0
+        self._ty_int = max(-self._t_imax, min(self._t_imax, self._ty_int + e))
+        d = e - self._ty_lerr
+        self._ty_out = self._ty_kp * e + self._ty_ki * self._ty_int + self._ty_kd * d
+        self._ty_lerr = e
+
+    def _track_limit(self, value):
+        if abs(value) <= self._t_min:
+            return 0
+        if value > self._t_max:
+            return self._t_max
+        if value < -self._t_max:
+            return -self._t_max
+        return value
+
+    @property
+    def track_vt(self):
+        return self._track_limit(self._tx_out + self._ty_out)
+
+    @property
+    def track_vp(self):
+        return self._track_limit(self._ty_out - self._tx_out)

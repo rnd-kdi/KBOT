@@ -513,12 +513,16 @@ class DriveBase:
         Stops the robot by letting the motors spin freely.
     '''
     def stop(self):
+        if not self.left:
+            return
         self.left[0].driver.set_motors(self.left_motor_ports+self.right_motor_ports, 0)
     
     '''
         Stops the robot by passively braking the motors.
     '''
     def brake(self):
+        if not self.left:
+            return
         self.left[0].driver.brake(self.left_motor_ports+self.right_motor_ports)
 
     '''

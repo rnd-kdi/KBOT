@@ -3579,6 +3579,131 @@ Blockly.Python['kbot_pid_reset'] = function (block) {
   return code;
 };
 
+// ============ Vision Tracking Blocks ============
+
+// Block: kbot_track_set_pid
+Blockly.Blocks['kbot_track_set_pid'] = {
+  init: function () {
+    this.jsonInit({
+      type: "kbot_track_set_pid",
+      message0: "KBOT tracking set PID %1 Kp %2 Ki %3 Kd %4",
+      previousStatement: null,
+      nextStatement: null,
+      args0: [
+        {
+          type: "field_dropdown",
+          name: "AXIS",
+          options: [["X", "x"], ["Y", "y"]]
+        },
+        { type: "input_value", name: "kp", check: "Number" },
+        { type: "input_value", name: "ki", check: "Number" },
+        { type: "input_value", name: "kd", check: "Number" }
+      ],
+      inputsInline: true,
+      colour: KBotColorBlock,
+      tooltip: "Cài đặt thông số PID cho trục X (lái) hoặc Y (tiến/lùi)",
+      helpUrl: ""
+    });
+  }
+};
+
+Blockly.Python['kbot_track_set_pid'] = function (block) {
+  var axis = block.getFieldValue('AXIS');
+  var kp = Blockly.Python.valueToCode(block, 'kp', Blockly.Python.ORDER_ATOMIC);
+  var ki = Blockly.Python.valueToCode(block, 'ki', Blockly.Python.ORDER_ATOMIC);
+  var kd = Blockly.Python.valueToCode(block, 'kd', Blockly.Python.ORDER_ATOMIC);
+  return "kbot.track_set_pid_" + axis + "(" + kp + ", " + ki + ", " + kd + ")\n";
+};
+
+// Block: kbot_track_set_speed
+Blockly.Blocks['kbot_track_set_speed'] = {
+  init: function () {
+    this.jsonInit({
+      type: "kbot_track_set_speed",
+      message0: "KBOT tracking speed min %1 max %2",
+      previousStatement: null,
+      nextStatement: null,
+      args0: [
+        { type: "input_value", name: "min_speed", check: "Number" },
+        { type: "input_value", name: "max_speed", check: "Number" }
+      ],
+      inputsInline: true,
+      colour: KBotColorBlock,
+      tooltip: "Cài đặt tốc độ tối thiểu và tối đa cho tracking",
+      helpUrl: ""
+    });
+  }
+};
+
+Blockly.Python['kbot_track_set_speed'] = function (block) {
+  var min_speed = Blockly.Python.valueToCode(block, 'min_speed', Blockly.Python.ORDER_ATOMIC);
+  var max_speed = Blockly.Python.valueToCode(block, 'max_speed', Blockly.Python.ORDER_ATOMIC);
+  return "kbot.track_set_speed(" + min_speed + ", " + max_speed + ")\n";
+};
+
+// Block: kbot_track_update
+Blockly.Blocks['kbot_track_update'] = {
+  init: function () {
+    this.jsonInit({
+      type: "kbot_track_update",
+      message0: "KBOT track %1 object ID %2 target %3",
+      previousStatement: null,
+      nextStatement: null,
+      args0: [
+        {
+          type: "field_dropdown",
+          name: "AXIS",
+          options: [["X", "x"], ["Y", "y"]]
+        },
+        {
+          type: "field_dropdown",
+          name: "OBJECT_ID",
+          options: [["1","1"],["2","2"],["3","3"],["4","4"],["5","5"],["6","6"],["7","7"],["8","8"],["9","9"],["10","10"]]
+        },
+        { type: "input_value", name: "target", check: "Number" }
+      ],
+      inputsInline: true,
+      colour: KBotColorBlock,
+      tooltip: "Tính PID tracking theo trục X (lái) hoặc Y (tiến/lùi) từ dữ liệu HuskyLens",
+      helpUrl: ""
+    });
+  }
+};
+
+Blockly.Python['kbot_track_update'] = function (block) {
+  var axis = block.getFieldValue('AXIS');
+  var objectId = block.getFieldValue('OBJECT_ID');
+  var target = Blockly.Python.valueToCode(block, 'target', Blockly.Python.ORDER_ATOMIC);
+  var dataKey = axis === 'x' ? 'x' : 'y';
+  return "kbot.track_" + axis + "(_husky_block_" + objectId + "[\"" + dataKey + "\"], " + target + ")\n";
+};
+
+// Block: kbot_track_speed (value block)
+Blockly.Blocks['kbot_track_speed'] = {
+  init: function () {
+    this.jsonInit({
+      type: "kbot_track_speed",
+      message0: "KBOT tracking %1",
+      output: "Number",
+      args0: [
+        {
+          type: "field_dropdown",
+          name: "OUTPUT",
+          options: [["vT (trái)", "track_vt"], ["vP (phải)", "track_vp"]]
+        }
+      ],
+      colour: KBotColorBlock,
+      tooltip: "Đọc tốc độ tracking: vT (bánh trái) hoặc vP (bánh phải)",
+      helpUrl: ""
+    });
+  }
+};
+
+Blockly.Python['kbot_track_speed'] = function (block) {
+  var output = block.getFieldValue('OUTPUT');
+  return ["kbot." + output, Blockly.Python.ORDER_MEMBER];
+};
+
 // Block 10: kbot_motor_run
 Blockly.Blocks['kbot_motor_run'] = {
   init: function () {
