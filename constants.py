@@ -20,11 +20,6 @@ S2 = const(1)
 S3 = const(2)
 S4 = const(3)
 
-# drivetrain mode
-MODE_2WD = const(0)
-MODE_4WD = const(1)
-MODE_MECANUM = const(2)
-
 # stop method
 STOP = const(0)
 BRAKE = const(1)
@@ -33,7 +28,6 @@ BRAKE = const(1)
 SECOND = const(0)
 DEGREE = const(1)
 CM = const(2)
-INCH = const(3)
 
 # direction
 DIR_FW = const(0) # forward
@@ -44,8 +38,6 @@ DIR_BW = const(4) # backward
 DIR_LB = const(5) # left backward
 DIR_L = const(6) # turn left
 DIR_LF = const(7) # left forward
-DIR_SL = const(8) # side left
-DIR_SR = const(9) # side right
 
 # gamepad buttons
 BTN_UP = 'U'
@@ -79,8 +71,6 @@ ARY = 'ARY'
 AR_DIR = 'AR_DIR'
 AR_DISTANCE = 'AR_DISTANCE'
 
-DPAD = const(1)
-JOYSTICK = const(2)
 
 # line sensor status
 LINE_LEFT3 = const(-3)

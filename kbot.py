@@ -26,6 +26,14 @@ class KBot:
         self._ki = 0.07
         self._kd = 0.5
         self._pid_running = False
+        # Remote control state
+        self.mode_auto = True
+        self._min_speed = 40
+        self._teleop_cmd = ''
+        self._teleop_cmd_handlers = {}
+        # Line following state
+        self._line_sensor = None
+        self._last_line_state = LINE_CENTER
         # Vision tracking PID state
         self._tx_kp = 0.23
         self._tx_ki = 0
@@ -44,8 +52,10 @@ class KBot:
         self._t_dz = 5
         self._t_imax = 50
 
-    def speed(self, speed):
+    def speed(self, speed, min_speed=None):
         self._speed = speed
+        if min_speed is not None:
+            self._min_speed = min_speed
 
     def forward(self, speed=None):
         if speed is None:
@@ -206,6 +216,235 @@ class KBot:
         self.pid_reset()
         self.left.stop()
         self.right.stop()
+
+    # ============ Remote Control (Gamepad) ============
+
+    async def run_teleop(self, gamepad, accel_steps=5):
+        self.mode_auto = False
+        self._teleop_cmd = ''
+        speed = self._min_speed
+        turn_speed = self._min_speed
+        last_dir = -1
+        while True:
+            if self.mode_auto:
+                await asyncio.sleep_ms(100)
+                continue
+
+            dir = -1
+            if gamepad.data[AL_DISTANCE] > 50:
+                dir = gamepad.data[AL_DIR]
+            elif gamepad.data[BTN_UP] and gamepad.data[BTN_LEFT]:
+                self._teleop_cmd = BTN_UP
+                dir = DIR_LF
+            elif gamepad.data[BTN_UP] and gamepad.data[BTN_RIGHT]:
+                self._teleop_cmd = BTN_UP
+                dir = DIR_RF
+            elif gamepad.data[BTN_DOWN] and gamepad.data[BTN_LEFT]:
+                self._teleop_cmd = BTN_DOWN
+                dir = DIR_LB
+            elif gamepad.data[BTN_DOWN] and gamepad.data[BTN_RIGHT]:
+                self._teleop_cmd = BTN_DOWN
+                dir = DIR_RB
+            elif gamepad.data[BTN_UP]:
+                self._teleop_cmd = BTN_UP
+                dir = DIR_FW
+            elif gamepad.data[BTN_DOWN]:
+                self._teleop_cmd = BTN_DOWN
+                dir = DIR_BW
+            elif gamepad.data[BTN_LEFT]:
+                self._teleop_cmd = BTN_LEFT
+                dir = DIR_L
+            elif gamepad.data[BTN_RIGHT]:
+                self._teleop_cmd = BTN_RIGHT
+                dir = DIR_R
+            elif gamepad.data[BTN_L1]:
+                self._teleop_cmd = BTN_L1
+            elif gamepad.data[BTN_R1]:
+                self._teleop_cmd = BTN_R1
+            elif gamepad.data[BTN_TRIANGLE]:
+                self._teleop_cmd = BTN_TRIANGLE
+            elif gamepad.data[BTN_SQUARE]:
+                self._teleop_cmd = BTN_SQUARE
+            elif gamepad.data[BTN_CROSS]:
+                self._teleop_cmd = BTN_CROSS
+            elif gamepad.data[BTN_CIRCLE]:
+                self._teleop_cmd = BTN_CIRCLE
+            elif gamepad.data[BTN_L2]:
+                self._teleop_cmd = BTN_L2
+            elif gamepad.data[BTN_R2]:
+                self._teleop_cmd = BTN_R2
+            elif gamepad.data[BTN_M1]:
+                self._teleop_cmd = BTN_M1
+            elif gamepad.data[BTN_M2]:
+                self._teleop_cmd = BTN_M2
+            elif gamepad.data[BTN_THUMBL]:
+                self._teleop_cmd = BTN_THUMBL
+            elif gamepad.data[BTN_THUMBR]:
+                self._teleop_cmd = BTN_THUMBR
+            else:
+                self._teleop_cmd = ''
+
+            if dir != last_dir:
+                speed = self._min_speed
+                turn_speed = self._min_speed
+            else:
+                speed = min(speed + accel_steps, self._speed)
+                turn_speed = min(turn_speed + int(accel_steps / 2), self._speed)
+
+            if self._teleop_cmd in self._teleop_cmd_handlers:
+                if self._teleop_cmd_handlers[self._teleop_cmd] is not None:
+                    await self._teleop_cmd_handlers[self._teleop_cmd]()
+                    await asyncio.sleep_ms(200)
+            else:
+                if dir == DIR_FW:
+                    self.run_speed(speed, speed)
+                elif dir == DIR_BW:
+                    self.run_speed(-speed, -speed)
+                elif dir == DIR_L:
+                    self.run_speed(-turn_speed, turn_speed)
+                elif dir == DIR_R:
+                    self.run_speed(turn_speed, -turn_speed)
+                elif dir == DIR_RF:
+                    self.run_speed(speed, int(speed / 2))
+                elif dir == DIR_LF:
+                    self.run_speed(int(speed / 2), speed)
+                elif dir == DIR_RB:
+                    self.run_speed(-speed, int(-speed / 2))
+                elif dir == DIR_LB:
+                    self.run_speed(int(-speed / 2), -speed)
+                else:
+                    self.stop()
+
+            last_dir = dir
+            await asyncio.sleep_ms(10)
+
+    def on_teleop_command(self, cmd, callback):
+        self._teleop_cmd_handlers[cmd] = callback
+
+    # ============ Line Following ============
+
+    def line_sensor(self, sensor):
+        self._line_sensor = sensor
+
+    async def follow_line(self, backward=True, line_state=None):
+        if self._line_sensor is None:
+            return
+        if line_state is None:
+            line_state = self._line_sensor.check()
+
+        if line_state == LINE_END:
+            if backward:
+                self.run_speed(-self._min_speed, -self._min_speed)
+        elif line_state == LINE_CENTER:
+            if self._last_line_state == LINE_CENTER:
+                self.forward()
+            else:
+                self.run_speed(self._min_speed, self._min_speed)
+        elif line_state == LINE_CROSS:
+            self.run_speed(self._min_speed, self._min_speed)
+        elif line_state == LINE_RIGHT:
+            self.run_speed(self._min_speed, int(self._min_speed * 1.25))
+        elif line_state == LINE_RIGHT2:
+            self.run_speed(0, self._min_speed)
+        elif line_state == LINE_RIGHT3:
+            while line_state != LINE_CENTER and line_state != LINE_LEFT:
+                self.run_speed(-self._min_speed, self._min_speed)
+                line_state = self._line_sensor.check()
+            self._last_line_state = line_state
+            return
+        elif line_state == LINE_LEFT:
+            self.run_speed(int(self._min_speed * 1.25), self._min_speed)
+        elif line_state == LINE_LEFT2:
+            self.run_speed(self._min_speed, 0)
+        elif line_state == LINE_LEFT3:
+            while line_state != LINE_CENTER and line_state != LINE_RIGHT:
+                self.run_speed(self._min_speed, -self._min_speed)
+                line_state = self._line_sensor.check()
+            self._last_line_state = line_state
+            return
+
+        self._last_line_state = line_state
+
+    async def follow_line_until_cross(self, then=STOP):
+        status = 1
+        count = 0
+        while True:
+            line_state = self._line_sensor.check()
+            if status == 1:
+                if line_state != LINE_CROSS:
+                    status = 2
+            elif status == 2:
+                if line_state == LINE_CROSS:
+                    count += 1
+                    if count == 2:
+                        break
+            await self.follow_line(True, line_state)
+            if status == 2 and count == 1:
+                await asyncio.sleep_ms(20)
+            else:
+                await asyncio.sleep_ms(10)
+        await self.stop_then(then)
+
+    async def follow_line_until_end(self, then=STOP):
+        count = 2
+        while True:
+            line_state = self._line_sensor.check()
+            if line_state == LINE_END:
+                count -= 1
+                if count == 0:
+                    break
+            await self.follow_line(False, line_state)
+            await asyncio.sleep_ms(10)
+        await self.stop_then(then)
+
+    async def follow_line_by_time(self, duration, then=STOP):
+        start = ticks_ms()
+        duration_ms = duration * 1000
+        while ticks_ms() - start < duration_ms:
+            await self.follow_line(True)
+            await asyncio.sleep_ms(10)
+        await self.stop_then(then)
+
+    async def follow_line_until(self, condition, then=STOP):
+        status = 1
+        count = 0
+        while True:
+            line_state = self._line_sensor.check()
+            if status == 1:
+                if line_state != LINE_CROSS:
+                    status = 2
+            elif status == 2:
+                if condition():
+                    count += 1
+                    if count == 2:
+                        break
+            await self.follow_line(True, line_state)
+            await asyncio.sleep_ms(10)
+        await self.stop_then(then)
+
+    async def turn_until_line_detected(self, steering, then=STOP):
+        status = 0
+        counter = 0
+        if steering > 0:
+            self.run_speed(self._speed, -self._speed)
+        else:
+            self.run_speed(-self._speed, self._speed)
+        while True:
+            line_state = self._line_sensor.check()
+            if status == 0:
+                if line_state == LINE_END:
+                    status = 1
+            elif status == 1:
+                if line_state != LINE_END:
+                    if steering > 0:
+                        self.run_speed(int(self._speed * 0.75), int(-self._speed * 0.75))
+                    else:
+                        self.run_speed(int(-self._speed * 0.75), int(self._speed * 0.75))
+                    counter -= 1
+                    if counter <= 0:
+                        break
+            await asyncio.sleep_ms(10)
+        await self.stop_then(then)
 
     # ============ Vision Tracking PID ============
 

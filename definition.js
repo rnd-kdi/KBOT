@@ -1,24 +1,7 @@
-var roboticsRobotBlockColor = "#ff4ccd";
 var roboticsMotorBlockColor = "#0090f5";
 var roboticsSensorBlockColor = "#9b6af6";
-var roboticsLineBlockColor = "#34ccf1";
 
 const ImgUrl2 = "https://ohstem-public.s3.ap-southeast-1.amazonaws.com/extensions/AITT-VN/yolobit_extension_rover/images/";
-
-var robotics_stop_then = [
-  [
-    Blockly.Msg.ROBOTICS_STOP,
-    "STOP"
-  ],
-  [
-    Blockly.Msg.ROBOTICS_BRAKE,
-    "BRAKE"
-  ],
-  [
-    Blockly.Msg.ROBOTICS_NONE,
-    "None"
-  ]
-];
 
 var motor_stop_then = [
   [
@@ -1040,1068 +1023,6 @@ Blockly.Python['robotics_servo_spin'] = function (block) {
   return code;
 };
 
-
-Blockly.Blocks['robotics_robot_init'] = {
-  init: function () {
-    this.jsonInit(
-      {
-        "type": "robotics_robot_init",
-        "message0": Blockly.Msg.ROBOTICS_ROBOT_INIT,
-        "args0": [
-          {
-            "type": "field_image",
-            "src": "https://ohstem-public.s3.ap-southeast-1.amazonaws.com/extensions/AITT-VN/yolouno_extension_robotics/images/left_front_wheel.svg",
-            "width": 20,
-            "height": 20,
-            "alt": Blockly.Msg.ROBOTICS_FRONT_LEFT,
-            "flipRtl": false
-          },
-          {
-            "type": "field_dropdown",
-            "name": "m1",
-            "options": robotics_motors_with_none
-          },
-          {
-            "type": "field_image",
-            "src": "https://ohstem-public.s3.ap-southeast-1.amazonaws.com/extensions/AITT-VN/yolouno_extension_robotics/images/right_front_wheel.svg",
-            "width": 20,
-            "height": 20,
-            "alt": Blockly.Msg.ROBOTICS_FRONT_RIGHT,
-            "flipRtl": false
-          },
-          {
-            "type": "field_dropdown",
-            "name": "m2",
-            "options": robotics_motors_with_none
-          },
-          {
-            "type": "field_image",
-            "src": "https://ohstem-public.s3.ap-southeast-1.amazonaws.com/extensions/AITT-VN/yolouno_extension_robotics/images/left_rear_wheel.svg",
-            "width": 20,
-            "height": 20,
-            "alt": Blockly.Msg.ROBOTICS_BACK_LEFT,
-            "flipRtl": false
-          },
-          {
-            "type": "field_dropdown",
-            "name": "m3",
-            "options": robotics_motors_with_none
-          },
-          {
-            "type": "field_image",
-            "src": "https://ohstem-public.s3.ap-southeast-1.amazonaws.com/extensions/AITT-VN/yolouno_extension_robotics/images/right_rear_wheel.svg",
-            "width": 20,
-            "height": 20,
-            "alt": Blockly.Msg.ROBOTICS_BACK_RIGHT,
-            "flipRtl": false
-          },
-          {
-            "type": "field_dropdown",
-            "name": "m4",
-            "options": robotics_motors_with_none
-          },
-          {
-            "type": "field_checkbox",
-            "name": "mecanum",
-            "checked": false
-          }
-        ],
-        "inputsInline": true,
-        "previousStatement": null,
-        "nextStatement": null,
-        "colour": roboticsRobotBlockColor,
-        "tooltip": "",
-        "helpUrl": ""
-      }
-    );
-  }
-};
-
-Blockly.Python["robotics_robot_init"] = function (block) {
-  var motor1 = block.getFieldValue("m1");
-  var motor2 = block.getFieldValue("m2");
-  var motor3 = block.getFieldValue("m3");
-  var motor4 = block.getFieldValue("m4");
-  var mecanum = block.getFieldValue('mecanum') === 'TRUE';
-  
-  // TODO: Assemble Python into code variable.
-  Blockly.Python.definitions_['import_robotics_drivebase'] = 'from drivebase import *';
-  var mode = 'MODE_2WD';
-  if (mecanum) {
-    mode = 'MODE_MECANUM';
-  } else {
-    if (motor1 != "None" && motor2 != "None" && motor3 != "None" && motor4 != "None") {
-      mode = 'MODE_4WD';
-    } else {
-      mode = 'MODE_2WD';
-    }
-  }
-
-  Blockly.Python.definitions_['init_robotics_drivebase'] = 'robot = DriveBase(' + mode + ', m1=' + motor1 + ', m2=' + motor2 + ', m3=' + motor3 + ', m4=' + motor4 + ')';
-  Blockly.Python.definitions_['deinit_robot'] = 'robot.stop()';
-  
-  var code = "";
-  return code;
-};
-
-Blockly.Blocks['robotics_robot_config'] = {
-  init: function () {
-    this.jsonInit(
-      {
-        "type": "robotics_robot_config",
-        "message0": Blockly.Msg.ROBOTICS_ROBOT_CONFIG,
-        "args0": [
-          {
-            "type": "field_image",
-            "src": "https://ohstem-public.s3.ap-southeast-1.amazonaws.com/extensions/AITT-VN/yolouno_extension_robotics/images/wheel_diameter.svg",
-            "width": 30,
-            "height": 30,
-            "alt": Blockly.Msg.ROBOTICS_WHEELS,
-            "flipRtl": false
-          },
-          {
-            "type": "input_value",
-            "name": "wheel",
-            "check": "Number",
-            "min": 0,
-          },
-          {
-            "type": "field_image",
-            "src": "https://ohstem-public.s3.ap-southeast-1.amazonaws.com/extensions/AITT-VN/yolouno_extension_robotics/images/robot_width.svg",
-            "width": 30,
-            "height": 30,
-            "alt": Blockly.Msg.ROBOTICS_WIDTH,
-            "flipRtl": false
-          },
-          {
-            "type": "input_value",
-            "name": "width",
-            "check": "Number",
-            "min": 0,
-          },
-        ],
-        "inputsInline": true,
-        "previousStatement": null,
-        "nextStatement": null,
-        "colour": roboticsRobotBlockColor,
-        "tooltip": "",
-        "helpUrl": ""
-      }
-    );
-  }
-};
-
-Blockly.Python["robotics_robot_config"] = function (block) {
-  var wheel = Blockly.Python.valueToCode(block, 'wheel', Blockly.Python.ORDER_ATOMIC);
-  var width = Blockly.Python.valueToCode(block, 'width', Blockly.Python.ORDER_ATOMIC);
-  // TODO: Assemble Python into code variable.  
-  var code = "robot.size(wheel=" + wheel + ", width=" + width + ")\n";
-  return code;
-};
-
-Blockly.Blocks['robotics_robot_move'] = {
-  init: function () {
-    this.jsonInit(
-      {
-        "type": "robotics_robot_move",
-        "message0": Blockly.Msg.ROBOTICS_ROBOT_MOVE,
-        "args0": [
-          {
-            "type": "field_dropdown",
-            "name": "direction",
-            "options": [
-              [
-                {
-                  "src": "static/blocks/block_images/59043.svg",
-                  "width": 15,
-                  "height": 15,
-                  "alt": "*"
-                },
-                "forward"
-              ],
-              [
-                {
-                  "src": "static/blocks/block_images/959159.svg",
-                  "width": 15,
-                  "height": 15,
-                  "alt": "*"
-                },
-                "backward"
-              ],
-              [
-                {
-                  "src": "static/blocks/block_images/860774.svg",
-                  "width": 15,
-                  "height": 15,
-                  "alt": "*"
-                },
-                "turn_left"
-              ],
-              [
-                {
-                  "src": "static/blocks/block_images/74474.svg",
-                  "width": 15,
-                  "height": 15,
-                  "alt": "*"
-                },
-                "turn_right"
-              ],
-              [
-                {
-                  "src": "static/blocks/block_images/arrow-left.svg",
-                  "width": 15,
-                  "height": 15,
-                  "alt": "side left"
-                },
-                "move_left"
-              ],
-              [
-                {
-                  "src": "static/blocks/block_images/arrow-right.svg",
-                  "width": 15,
-                  "height": 15,
-                  "alt": "side right"
-                },
-                "move_right"
-              ]
-            ]
-          }
-        ],
-        "inputsInline": true,
-        "previousStatement": null,
-        "nextStatement": null,
-        "colour": roboticsRobotBlockColor,
-        "tooltip": "",
-        "helpUrl": ""
-      }
-    );
-  }
-};
-
-Blockly.Python["robotics_robot_move"] = function (block) {
-  var dir = block.getFieldValue("direction");
-  var speed = Blockly.Python.valueToCode(block, 'speed', Blockly.Python.ORDER_ATOMIC);
-  // TODO: Assemble Python into code variable.
-  var code = "robot." + dir + "()\n";
-  return code;
-};
-
-Blockly.Blocks['robotics_robot_move_delay'] = {
-  init: function () {
-    this.jsonInit(
-      {
-        "type": "robotics_robot_move_delay",
-        "message0": Blockly.Msg.ROBOTICS_ROBOT_MOVE_DELAY,
-        "args0": [
-          {
-            "type": "field_dropdown",
-            "name": "direction",
-            "options": [
-              [
-                {
-                  "src": "static/blocks/block_images/59043.svg",
-                  "width": 15,
-                  "height": 15,
-                  "alt": "*"
-                },
-                "forward_for"
-              ],
-              [
-                {
-                  "src": "static/blocks/block_images/959159.svg",
-                  "width": 15,
-                  "height": 15,
-                  "alt": "*"
-                },
-                "backward_for"
-              ],
-              [
-                {
-                  "src": "static/blocks/block_images/arrow-left.svg",
-                  "width": 15,
-                  "height": 15,
-                  "alt": "side left"
-                },
-                "move_left_for"
-              ],
-              [
-                {
-                  "src": "static/blocks/block_images/arrow-right.svg",
-                  "width": 15,
-                  "height": 15,
-                  "alt": "side right"
-                },
-                "move_right_for"
-              ]
-            ]
-          },
-          {
-            type: "input_value",
-            check: "Number",
-            value: 1,
-            name: "amount",
-          },
-          {
-            "type": "field_dropdown",
-            "name": "unit",
-            "options": [
-              [
-                Blockly.Msg.ROBOTICS_SECONDS,
-                "SECOND"
-              ],
-              [
-                "cm",
-                "CM"
-              ],
-            ],
-          },
-          {
-            "type": "field_dropdown",
-            "name": "then",
-            "options": [
-              [
-                Blockly.Msg.ROBOTICS_STOP,
-                "STOP"
-              ],
-              [
-                Blockly.Msg.ROBOTICS_BRAKE,
-                "BRAKE"
-              ],
-            ],
-          },
-        ],
-        "inputsInline": true,
-        "previousStatement": null,
-        "nextStatement": null,
-        "colour": roboticsRobotBlockColor,
-        "tooltip": "",
-        "helpUrl": ""
-      }
-    );
-  }
-};
-
-Blockly.Python["robotics_robot_move_delay"] = function (block) {
-  var dir = block.getFieldValue("direction");
-  var unit = block.getFieldValue("unit");
-  var then = block.getFieldValue("then");
-  var amount = Blockly.Python.valueToCode(block, 'amount', Blockly.Python.ORDER_ATOMIC);
-
-  var code = "await robot." + dir + "(" + amount + ", unit=" + unit + ", then=" + then + ")\n";
-
-  return code;
-};
-
-Blockly.Blocks['robotics_robot_turn_delay'] = {
-  init: function () {
-    this.jsonInit(
-      {
-        "type": "robotics_robot_turn",
-        "message0": Blockly.Msg.ROBOTICS_ROBOT_TURN_DELAYED,
-        "args0": [
-          {
-            "type": "field_dropdown",
-            "name": "direction",
-            "options": [
-              [
-                {
-                  "src": "static/blocks/block_images/860774.svg",
-                  "width": 15,
-                  "height": 15,
-                  "alt": "*"
-                },
-                "turn_left_for"
-              ],
-              [
-                {
-                  "src": "static/blocks/block_images/74474.svg",
-                  "width": 15,
-                  "height": 15,
-                  "alt": "*"
-                },
-                "turn_right_for"
-              ]
-            ]
-          },
-          {
-            min: 0,
-            type: "input_value",
-            check: "Number",
-            value: 1,
-            name: "amount",
-          },
-          {
-            "type": "field_dropdown",
-            "name": "unit",
-            "options": [
-              [
-                Blockly.Msg.ROBOTICS_SECONDS,
-                "SECOND"
-              ],
-              [
-                Blockly.Msg.ROBOTICS_DEGREE,
-                "DEGREE"
-              ],
-            ],
-          },
-          {
-            "type": "field_dropdown",
-            "name": "then",
-            "options": [
-              [
-                Blockly.Msg.ROBOTICS_STOP,
-                "STOP"
-              ],
-              [
-                Blockly.Msg.ROBOTICS_BRAKE,
-                "BRAKE"
-              ],
-            ],
-          },
-        ],
-        "inputsInline": true,
-        "previousStatement": null,
-        "nextStatement": null,
-        "colour": roboticsRobotBlockColor,
-        "tooltip": "",
-        "helpUrl": ""
-      }
-    );
-  }
-};
-
-Blockly.Python["robotics_robot_turn_delay"] = function (block) {
-  var dir = block.getFieldValue("direction");
-  var unit = block.getFieldValue("unit");
-  var amount = Blockly.Python.valueToCode(block, 'amount', Blockly.Python.ORDER_ATOMIC);
-  var then = block.getFieldValue("then");
-  var code = "await robot." + dir + "(" + amount + ", unit=" + unit + ", then=" + then + ")\n";
-  return code;
-};
-
-Blockly.Blocks['robotics_robot_stop'] = {
-  init: function () {
-    this.jsonInit(
-      {
-        "type": "robotics_robot_stop",
-        "message0": Blockly.Msg.ROBOTICS_ROBOT_STOP,
-        "args0": [
-          {
-            "type": "field_dropdown",
-            "name": "then",
-            "options": [
-              [
-                Blockly.Msg.ROBOTICS_STOP,
-                "stop"
-              ],
-              [
-                Blockly.Msg.ROBOTICS_BRAKE,
-                "brake"
-              ],
-            ],
-          },
-        ],
-        "inputsInline": true,
-        "previousStatement": null,
-        "nextStatement": null,
-        "colour": roboticsRobotBlockColor,
-        "tooltip": "",
-        "helpUrl": ""
-
-      }
-    );
-  }
-};
-
-Blockly.Python["robotics_robot_stop"] = function (block) {
-  // TODO: Assemble Python into code variable.
-  var then = block.getFieldValue("then");
-  var code = "robot." + then + "()\n";
-  return code;
-};
-
-Blockly.Blocks['robotics_robot_set_speed'] = {
-  init: function () {
-    this.jsonInit(
-      {
-        "type": "robotics_robot_set_speed",
-        "message0": Blockly.Msg.ROBOTICS_ROBOT_SET_SPEED,
-        "args0": [
-          {
-            type: "input_value",
-            check: "Number",
-            value: 1,
-            name: "speed",
-          },
-          {
-            type: "input_value",
-            check: "Number",
-            value: 1,
-            name: "min_speed",
-          },
-        ],
-        "inputsInline": true,
-        "previousStatement": null,
-        "nextStatement": null,
-        "colour": roboticsRobotBlockColor,
-        "tooltip": "",
-        "helpUrl": ""
-      }
-    );
-  }
-};
-
-Blockly.Python["robotics_robot_set_speed"] = function (block) {
-  var speed = Blockly.Python.valueToCode(block, 'speed', Blockly.Python.ORDER_ATOMIC);
-  var min_speed = Blockly.Python.valueToCode(block, 'min_speed', Blockly.Python.ORDER_ATOMIC);
-  // TODO: Assemble Python into code variable.
-  var code = "robot.speed(" + speed + ", min_speed=" + min_speed + ")\n";
-  return code;
-};
-
-Blockly.Blocks['robotics_robot_use_gyro'] = {
-  init: function () {
-    this.jsonInit(
-      {
-        "type": "robotics_robot_use_gyro",
-        "message0": Blockly.Msg.ROBOTICS_ROBOT_USE_GYRO,
-        "args0": [
-          {
-            "type": "field_dropdown",
-            "name": "use_gyro",
-            "options": [
-              [
-                "encoder",
-                "False"
-              ],
-              [
-                Blockly.Msg.ROBOTICS_ANGLE_SENSOR,
-                "True"
-              ],
-            ],
-          },
-        ],
-        "inputsInline": true,
-        "previousStatement": null,
-        "nextStatement": null,
-        "colour": roboticsRobotBlockColor,
-        "tooltip": "",
-        "helpUrl": ""
-
-      }
-    );
-  }
-};
-
-Blockly.Python["robotics_robot_use_gyro"] = function (block) {
-  // TODO: Assemble Python into code variable.
-  var use_gyro = block.getFieldValue("use_gyro");
-  var code = "robot.use_gyro(" + use_gyro + ")\n";
-  return code;
-};
-
-Blockly.Blocks['robotics_robot_set_pid'] = {
-  init: function () {
-    this.jsonInit(
-      {
-        "type": "robotics_robot_set_pid",
-        "message0": Blockly.Msg.ROBOTICS_ROBOT_SET_PID,
-        "args0": [
-          {
-            type: "input_value",
-            check: "Number",
-            value: 1,
-            name: "KP",
-          },
-          {
-            type: "input_value",
-            check: "Number",
-            value: 1,
-            name: "KI",
-          },
-          {
-            type: "input_value",
-            check: "Number",
-            value: 1,
-            name: "KD",
-          },
-        ],
-        "inputsInline": true,
-        "previousStatement": null,
-        "nextStatement": null,
-        "colour": roboticsRobotBlockColor,
-        "tooltip": "",
-        "helpUrl": ""
-      }
-    );
-  }
-};
-
-Blockly.Python["robotics_robot_set_pid"] = function (block) {
-  var kp = Blockly.Python.valueToCode(block, 'KP', Blockly.Python.ORDER_ATOMIC);
-  var ki = Blockly.Python.valueToCode(block, 'KI', Blockly.Python.ORDER_ATOMIC);
-  var kd = Blockly.Python.valueToCode(block, 'KD', Blockly.Python.ORDER_ATOMIC);
-  // TODO: Assemble Python into code variable.
-  var code = "robot.pid(Kp=" + kp + ", Ki=" + ki + ", Kd=" + kd + ")\n";
-  return code;
-};
-
-Blockly.Blocks['robotics_robot_set_speed_ratio'] = {
-  init: function () {
-    this.jsonInit(
-      {
-        "type": "robotics_robot_set_speed_ratio",
-        "message0": Blockly.Msg.ROBOTICS_ROBOT_SET_SPEED_RATIO,
-        "args0": [
-          {
-            type: "input_value",
-            check: "Number",
-            value: 1,
-            name: "left",
-          },
-          {
-            type: "input_value",
-            check: "Number",
-            value: 1,
-            name: "right",
-          },
-        ],
-        "inputsInline": true,
-        "previousStatement": null,
-        "nextStatement": null,
-        "colour": roboticsRobotBlockColor,
-        "tooltip": "",
-        "helpUrl": ""
-      }
-    );
-  }
-};
-
-Blockly.Python["robotics_robot_set_speed_ratio"] = function (block) {
-  var left = Blockly.Python.valueToCode(block, 'left', Blockly.Python.ORDER_ATOMIC);
-  var right = Blockly.Python.valueToCode(block, 'right', Blockly.Python.ORDER_ATOMIC);
-  // TODO: Assemble Python into code variable.
-  var code = "robot.speed_ratio(left=" + left + ", right=" + right + ")\n";
-  return code;
-};
-
-// REMOTE CONTROL BLOCK
-
-const ImgUrl = 'https://ohstem-public.s3.ap-southeast-1.amazonaws.com/extensions/AITT-VN/xbot_extension_robocon/images/';
-
-Blockly.Blocks['robotics_remote_control_init'] = {
-  init: function () {
-    this.jsonInit(
-      {
-        type: "robotics_remote_control_init",
-        message0: Blockly.Msg.ROBOTICS_ROBOT_REMOTE_CONTROL_INIT,
-        previousStatement: null,
-        nextStatement: null,
-        args0: [ 
-          {
-            type: "input_value",
-            check: "Number",
-            value: 1,
-            name: "accel_steps",
-          },
-        ],
-        colour: roboticsRobotBlockColor,
-        "inputsInline": true,
-        tooltip: "",
-        helpUrl: ""
-      }
-    )
-  },
-};
-
-
-Blockly.Python['robotics_remote_control_init'] = function (block) {
-  var steps = Blockly.Python.valueToCode(block, 'accel_steps', Blockly.Python.ORDER_ATOMIC);
-  // TODO: Assemble Python into code variable.
-  Blockly.Python.definitions_['import_ble'] = 'from ble import *';
-  Blockly.Python.definitions_['import_robotics_gamepad'] = 'from gamepad import *';
-  Blockly.Python.definitions_['init_robotics_gamepad'] = 'gamepad = Gamepad()';
-  
-  var code = 'create_task(ble.wait_for_msg())\n';
-  code += 'create_task(gamepad.run())\n';
-  code += 'create_task(robot.run_teleop(gamepad, accel_steps=' + steps + '))\n';
-  return code;
-};
-
-
-Blockly.Blocks['robotics_remote_control_side_move_mode'] = {
-  init: function () {
-    this.jsonInit(
-      {
-        type: "robotics_remote_control_side_move_mode",
-        message0: Blockly.Msg.ROBOTICS_ROBOT_REMOTE_CONTROL_SIDE_MOVE_MODE,
-        previousStatement: null,
-        nextStatement: null,
-        args0: [
-          {
-            "type": "field_dropdown",
-            "name": "action",
-            "options": [
-              [
-                Blockly.Msg.ROBOTICS_DPAD,
-                "DPAD"
-              ],
-              [
-                Blockly.Msg.ROBOTICS_LEFT_JOYSTICK,
-                "JOYSTICK"
-              ],
-            ],
-          },
-         ],
-        colour: roboticsRobotBlockColor,
-        "inputsInline": true,
-        tooltip: "",
-        helpUrl: ""
-      }
-    )
-  },
-};
-
-
-Blockly.Python['robotics_remote_control_side_move_mode'] = function (block) {
-  // TODO: Assemble Python into code variable.
-  var action = block.getFieldValue("action");
-  var code = "robot.side_move_mode = " + action + "\n";
-  return code;
-};
-
-Blockly.Blocks['robotics_remote_control_off'] = {
-  init: function () {
-    this.jsonInit(
-      {
-        type: "robotics_remote_control_off",
-        message0: Blockly.Msg.ROBOTICS_ROBOT_REMOTE_CONTROL_OFF,
-        previousStatement: null,
-        nextStatement: null,
-        args0: [
-          {
-            "type": "field_dropdown",
-            "name": "action",
-            "options": [
-              [
-                Blockly.Msg.ROBOTICS_ROBOT_REMOTE_CONTROL_PAUSE,
-                "True"
-              ],
-              [
-                Blockly.Msg.ROBOTICS_ROBOT_REMOTE_CONTROL_RESTART,
-                "False"
-              ],
-            ],
-          },
-         ],
-        colour: roboticsRobotBlockColor,
-        "inputsInline": true,
-        tooltip: "",
-        helpUrl: ""
-      }
-    )
-  },
-};
-
-
-Blockly.Python['robotics_remote_control_off'] = function (block) {
-  // TODO: Assemble Python into code variable.
-  var action = block.getFieldValue("action");
-  var code = "robot.mode_auto = " + action + "\n";
-  return code;
-};
-
-Blockly.Blocks["robotics_remote_control_on_button"] = {
-  init: function () {
-    this.jsonInit({
-      colour: roboticsRobotBlockColor,
-      message0: Blockly.Msg.ROBOTICS_ROBOT_REMOTE_CONTROL_ON_BUTTON,
-      tooltip: Blockly.Msg.ROBOTICS_ROBOT_REMOTE_CONTROL_ON_BUTTON_TOOLTIP,
-      args0: [
-        {
-          type: "field_dropdown",
-          name: "BUTTON",
-          options: [
-            [
-              {
-                "src": "static/blocks/block_images/59043.svg",
-                "width": 15,
-                "height": 15,
-                "alt": "*"
-              },
-              "BTN_UP"
-            ],
-            [
-              {
-                "src": "static/blocks/block_images/959159.svg",
-                "width": 15,
-                "height": 15,
-                "alt": "*"
-              },
-              "BTN_DOWN"
-            ],
-            [
-              {
-                "src": "static/blocks/block_images/arrow-left.svg",
-                "width": 15,
-                "height": 15,
-                "alt": "side left"
-              },
-              "BTN_LEFT"
-            ],
-            [
-              {
-                "src": "static/blocks/block_images/arrow-right.svg",
-                "width": 15,
-                "height": 15,
-                "alt": "side right"
-              },
-              "BTN_RIGHT"
-            ],
-            [
-              {
-                "src": 'static/blocks/block_images/gamepad-square.png',
-                "width": 15,
-                "height": 15,
-                "alt": "*"
-              },
-              "BTN_SQUARE"
-            ],
-            [
-              {
-                "src": 'static/blocks/block_images/gamepad-circle.png',
-                "width": 15,
-                "height": 15,
-                "alt": "*"
-              },
-              "BTN_CIRCLE"
-            ],
-            [
-              {
-                "src": 'static/blocks/block_images/gamepad-cross.png',
-                "width": 15,
-                "height": 15,
-                "alt": "*"
-              },
-              "BTN_CROSS"
-            ],
-            [
-              {
-                "src": 'static/blocks/block_images/gamepad-triangle.png',
-                "width": 15,
-                "height": 15,
-                "alt": "*"
-              },
-              "BTN_TRIANGLE"
-            ],
-            ["L1", "BTN_L1"],
-            ["R1", "BTN_R1"],
-            ["L2", "BTN_L2"],
-            ["R2", "BTN_R2"],
-            ["SHARE", "BTN_M1"],
-            ["OPTIONS", "BTN_M2"],
-            ["Left Joystick", "BTN_THUMBL"],
-            ["Right Joystick", "BTN_THUMBR"],
-          ],
-        },
-        {
-          type: "input_dummy",
-        },
-        {
-          type: "input_statement",
-          name: "ACTION",
-        },
-      ],
-      helpUrl: "",
-    });
-  }
-};
-
-Blockly.Python['robotics_remote_control_on_button'] = function (block) {
-  var button = block.getFieldValue('BUTTON');
-  var statements_action = Blockly.Python.statementToCode(block, 'ACTION');
-
-  var globals = buildGlobalString(block);
-
-  var cbFunctionName = Blockly.Python.provideFunction_(
-    'on_cmd_' + button,
-    (globals != '') ?
-      ['def ' + Blockly.Python.FUNCTION_NAME_PLACEHOLDER_ + '():',
-        globals,
-        statements_action || Blockly.Python.PASS
-      ] :
-      ['def ' + Blockly.Python.FUNCTION_NAME_PLACEHOLDER_ + '():',
-        statements_action || Blockly.Python.PASS
-      ]);
-
-  var code = 'robot.on_teleop_command(' + button + ', ' + cbFunctionName + ')';
-  Blockly.Python.definitions_['setup_robotics_on_teleop_command' + button] = code;
-
-  return '';
-};
-
-Blockly.Blocks["robotics_remote_control_read_button"] = {
-  init: function () {
-    this.jsonInit({
-      colour: roboticsRobotBlockColor,
-      tooltip: "",
-      message0: Blockly.Msg.ROBOTICS_ROBOT_REMOTE_CONTROL_READ_BUTTON,
-      args0: [
-        {
-          type: "field_dropdown",
-          name: "BUTTON",
-          options: [
-            [
-              {
-                "src": "static/blocks/block_images/59043.svg",
-                "width": 15,
-                "height": 15,
-                "alt": "*"
-              },
-              "BTN_UP"
-            ],
-            [
-              {
-                "src": "static/blocks/block_images/959159.svg",
-                "width": 15,
-                "height": 15,
-                "alt": "*"
-              },
-              "BTN_DOWN"
-            ],
-            [
-              {
-                "src": "static/blocks/block_images/arrow-left.svg",
-                "width": 15,
-                "height": 15,
-                "alt": "side left"
-              },
-              "BTN_LEFT"
-            ],
-            [
-              {
-                "src": "static/blocks/block_images/arrow-right.svg",
-                "width": 15,
-                "height": 15,
-                "alt": "side right"
-              },
-              "BTN_RIGHT"
-            ],
-            [
-              {
-                "src": 'static/blocks/block_images/gamepad-square.png',
-                "width": 15,
-                "height": 15,
-                "alt": "*"
-              },
-              "BTN_SQUARE"
-            ],
-            [
-              {
-                "src": 'static/blocks/block_images/gamepad-circle.png',
-                "width": 15,
-                "height": 15,
-                "alt": "*"
-              },
-              "BTN_CIRCLE"
-            ],
-            [
-              {
-                "src": 'static/blocks/block_images/gamepad-cross.png',
-                "width": 15,
-                "height": 15,
-                "alt": "*"
-              },
-              "BTN_CROSS"
-            ],
-            [
-              {
-                "src": 'static/blocks/block_images/gamepad-triangle.png',
-                "width": 15,
-                "height": 15,
-                "alt": "*"
-              },
-              "BTN_TRIANGLE"
-            ],
-            ["L1", "BTN_L1"],
-            ["R1", "BTN_R1"],
-            ["L2", "BTN_L2"],
-            ["R2", "BTN_R2"],
-          ],
-        }
-      ],
-      output: "Boolean",
-      helpUrl: "",
-    });
-  },
-};
-
-Blockly.Python["robotics_remote_control_read_button"] = function (block) {
-  var button = block.getFieldValue("BUTTON");
-  // TODO: Assemble Python into code variable.
-  var code = 'gamepad.data[' + button + '] == 1';
-  return [code, Blockly.Python.ORDER_NONE];
-};
-
-Blockly.Blocks["robotics_remote_control_read_joystick"] = {
-  init: function () {
-    this.jsonInit({
-      colour: roboticsRobotBlockColor,
-      tooltip: "",
-      message0: Blockly.Msg.ROBOTICS_ROBOT_REMOTE_CONTROL_READ_JOYSTICK,
-      args0: [
-        {
-          "type": "field_dropdown",
-          "name": "joystick",
-          "options": [
-            [
-              Blockly.Msg.ROBOTICS_LEFT,
-              "AL"
-            ],
-            [
-              Blockly.Msg.ROBOTICS_RIGHT,
-              "AR"
-            ]
-          ]
-        },
-        {
-          "type": "field_dropdown",
-          "name": "data",
-          "options": [
-            [
-              "X",
-              "X"
-            ],
-            [
-              "Y",
-              "Y"
-            ],
-            [
-              Blockly.Msg.ROBOTICS_DIR,
-              "_DIR"
-            ],
-            [
-              Blockly.Msg.ROBOTICS_DISTANCE,
-              "_DISTANCE"
-            ]
-          ]
-        }
-      ],
-      output: "Number",
-      helpUrl: "",
-    });
-  },
-};
-
-Blockly.Python["robotics_remote_control_read_joystick"] = function (block) {
-  var joystick = block.getFieldValue("joystick");
-  var data = block.getFieldValue("data");
-  // TODO: Assemble Python into code variable.
-  var code = 'gamepad.data[' + joystick + data + ']';
-  return [code, Blockly.Python.ORDER_NONE];
-};
-
-
 // Angle sensor
 
 
@@ -2386,500 +1307,6 @@ Blockly.Python["robotics_get_battery"] = function (block) {
   return [code, Blockly.Python.ORDER_NONE];
 };
 
-Blockly.Blocks['robotics_angle_sensor_init'] = {
-  init: function () {
-    this.jsonInit(
-      {
-        "type": "robotics_angle_sensor_init",
-        "message0": Blockly.Msg.ROBOTICS_ROBOT_ANGLE_SENSOR_INIT,
-        "args0": [
-          {
-            "type": "field_dropdown",
-            "name": "type",
-            "options": [
-              ["MPU6050", "MPU6050"],
-              ["MPU9250", "MPU9250"]
-            ]
-          },
-          {
-            type: "input_value",
-            check: "Number",
-            value: 100,
-            name: "samples",
-          },
-        ],
-        "inputsInline": true,
-        "previousStatement": null,
-        "nextStatement": null,
-        "colour": roboticsSensorBlockColor,
-        "tooltip": "",
-        "helpUrl": ""
-      }
-    );
-  }
-};
-
-// Line sensor and line following
-
-Blockly.Blocks['robotics_line_sensor_i2c_init'] = {
-  init: function () {
-    this.jsonInit(
-      {
-        "type": "robotics_line_sensor_i2c_init",
-        "message0": Blockly.Msg.ROBOTICS_ROBOT_I2C_LINE_SENSOR_INIT,
-        "args0": [],
-        "inputsInline": true,
-        "previousStatement": null,
-        "nextStatement": null,
-        "colour": roboticsLineBlockColor,
-        "tooltip": "",
-        "helpUrl": ""
-      }
-    );
-  }
-};
-
-Blockly.Python["robotics_line_sensor_i2c_init"] = function (block) {
-  // TODO: Assemble Python into code variable.
-  Blockly.Python.definitions_['import_robotics_line_sensor'] = 'from line_sensor import *';
-  Blockly.Python.definitions_['init_robotics_line_sensor'] = 'line_sensor = LineSensorI2C()';
-  var code = "robot.line_sensor(line_sensor)\n";
-  return code;
-};
-
-Blockly.Blocks['robotics_line_sensor_digital_init'] = {
-  init: function () {
-    this.jsonInit(
-      {
-        "type": "robotics_line_sensor_digital_init",
-        "message0": Blockly.Msg.ROBOTICS_ROBOT_DIGITAL_LINE_SENSOR_INIT,
-        "args0": [
-          {
-            "type": "input_dummy"
-          },
-          {
-            "type": "field_dropdown",
-            "name": "S1",
-            "options": digitalPins
-          },
-          {
-            "type": "field_dropdown",
-            "name": "S2",
-            "options": digitalPins
-          },
-          {
-            "type": "field_dropdown",
-            "name": "S3",
-            "options": digitalPins
-          },
-        ],
-        "inputsInline": false,
-        "previousStatement": null,
-        "nextStatement": null,
-        "colour": roboticsLineBlockColor,
-        "tooltip": "",
-        "helpUrl": ""
-      }
-    );
-  }
-};
-
-Blockly.Python["robotics_line_sensor_digital_init"] = function (block) {
-  var s1 = block.getFieldValue("S1");
-  var s2 = block.getFieldValue("S2");
-  var s3 = block.getFieldValue("S3");
-  // TODO: Assemble Python into code variable.
-  Blockly.Python.definitions_['import_robotics_line_sensor'] = 'from line_sensor import *';
-  if (s3 == 'None') {
-    Blockly.Python.definitions_['init_robotics_line_sensor'] = 
-      'line_sensor = LineSensor2P(' + s1 + '_PIN, ' + s2 + '_PIN)';  
-  } else {
-    Blockly.Python.definitions_['init_robotics_line_sensor'] = 
-      'line_sensor = LineSensor3P(' + s1 + '_PIN, ' + s2 + '_PIN, ' + s3 + '_PIN)';  
-  }
-  var code = "robot.line_sensor(line_sensor)\n";
-  return code;
-  
-};
-// Line array
-
-Blockly.Blocks['robotics_line_sensor_read_all'] = {
-  init: function () {
-    this.jsonInit(
-      {
-        "type": "robotics_line_sensor_read_all",
-        "message0": Blockly.Msg.ROBOTICS_LINE_READ_ALL_MESSAGE0,
-        "args0": [
-          {
-            "type": "field_dropdown",
-            "name": "S1",
-            "options": [
-              [
-                {
-                  "src": ImgUrl2 + 'line_finder_none_detect.png',
-                  "width": 15,
-                  "height": 15,
-                  "alt": "none"
-                },
-                "0"
-              ],
-              [
-                {
-                  "src": ImgUrl2 + 'line_finder_detect.png',
-                  "width": 15,
-                  "height": 15,
-                  "alt": "detect"
-                },
-                "1"
-              ]
-            ]
-          },
-          {
-            "type": "field_dropdown",
-            "name": "S2",
-            "options": [
-              [
-                {
-                  "src": ImgUrl2 + 'line_finder_none_detect.png',
-                  "width": 15,
-                  "height": 15,
-                  "alt": "none"
-                },
-                "0"
-              ],
-              [
-                {
-                  "src": ImgUrl2 + 'line_finder_detect.png',
-                  "width": 15,
-                  "height": 15,
-                  "alt": "detect"
-                },
-                "1"
-              ]
-            ]
-          },
-          {
-            "type": "field_dropdown",
-            "name": "S3",
-            "options": [
-              [
-                {
-                  "src": ImgUrl2 + 'line_finder_none_detect.png',
-                  "width": 15,
-                  "height": 15,
-                  "alt": "none"
-                },
-                "0"
-              ],
-              [
-                {
-                  "src": ImgUrl2 + 'line_finder_detect.png',
-                  "width": 15,
-                  "height": 15,
-                  "alt": "detect"
-                },
-                "1"
-              ]
-            ]
-          },
-          {
-            "type": "field_dropdown",
-            "name": "S4",
-            "options": [
-              [
-                {
-                  "src": ImgUrl2 + 'line_finder_none_detect.png',
-                  "width": 15,
-                  "height": 15,
-                  "alt": "none"
-                },
-                "0"
-              ],
-              [
-                {
-                  "src": ImgUrl2 + 'line_finder_detect.png',
-                  "width": 15,
-                  "height": 15,
-                  "alt": "detect"
-                },
-                "1"
-              ]
-            ]
-          }
-        ],
-        "colour": roboticsLineBlockColor,
-        "output": "Boolean",
-        "tooltip": Blockly.Msg.ROBOTICS_LINE_READ_ALL_TOOLTIP,
-        "helpUrl": Blockly.Msg.ROBOTICS_LINE_READ_ALL_HELPURL
-      }
-    );
-  }
-};
-
-Blockly.Python["robotics_line_sensor_read_all"] = function (block) {
-  Blockly.Python.definitions_['import_line_sensor'] = 'from line_sensor import *';
-  Blockly.Python.definitions_['init_robotics_line_sensor'] = 'line_sensor = LineSensorI2C()';
-  var S1 = block.getFieldValue("S1");
-  var S2 = block.getFieldValue("S2");
-  var S3 = block.getFieldValue("S3");
-  var S4 = block.getFieldValue("S4");
-  // TODO: Assemble Python into code variable.
-  var code = "line_sensor.read() == (" + S1 + ", " + S2 + ", " + S3 + ", " + S4 + ")";
-  return [code, Blockly.Python.ORDER_NONE];
-};
-
-Blockly.Blocks['robotics_line_sensor_read'] = {
-  init: function() {
-    this.jsonInit(
-      {
-        "type": "robotics_line_sensor__read",
-        "message0": Blockly.Msg.ROBOTICS_ROBOT_LINE_SENSOR_READ,
-        "args0": [
-          {
-            "type": "field_dropdown",
-            "name": "port",
-            "options": [
-              ["S1", "0"],
-              ["S2", "1"],
-              ["S3", "2"],
-              ["S4", "3"],
-            ],
-          },
-        ],
-        "colour": roboticsLineBlockColor,
-        "output": "Boolean",
-        "tooltip": "",
-        "helpUrl": ""
-      }
-    );
-  }
-};
-
-Blockly.Python["robotics_line_sensor_read"] = function (block) {
-  var port = block.getFieldValue("port");
-  // TODO: Assemble Python into code variable.
-  var code = "line_sensor.read(" + port + ")";
-  return [code, Blockly.Python.ORDER_NONE];
-};
-
-Blockly.Blocks['robotics_follow_line_until_cross'] = {
-  init: function () {
-    this.jsonInit(
-      {
-        "type": "robotics_follow_line_until_cross",
-        "message0": Blockly.Msg.ROBOTICS_ROBOT_FOLLOW_LINE_UNTIL_CROSS,
-        "args0": [
-          {
-            type: "field_dropdown",
-            name: "stop",
-            options: [
-            [Blockly.Msg.ROBOTICS_BRAKE , "BRAKE"],
-            [Blockly.Msg.ROBOTICS_STOP, "STOP"],
-            [Blockly.Msg.ROBOTICS_NONE, "None"],
-            ]
-          },
-        ],
-        "inputsInline": true,
-        "previousStatement": null,
-        "nextStatement": null,
-        "colour": roboticsLineBlockColor,
-        "tooltip": "",
-        "helpUrl": ""
-      }
-    );
-  }
-};
-
-Blockly.Python["robotics_follow_line_until_cross"] = function (block) {
-  var stop = block.getFieldValue('stop');
-  // TODO: Assemble Python into code variable.
-  var code = "await robot.follow_line_until_cross(then=" + stop +  ")\n";
-  return code;
-};
-
-Blockly.Blocks['robotics_follow_line_until_end'] = {
-  init: function () {
-    this.jsonInit(
-      {
-        "type": "robotics_follow_line_until_end",
-        "message0": Blockly.Msg.ROBOTICS_ROBOT_FOLLOW_END_LINE,
-        "args0": [
-          {
-            type: "field_dropdown",
-            name: "stop",
-            options: [
-              [Blockly.Msg.ROBOTICS_BRAKE , "BRAKE"],
-              [Blockly.Msg.ROBOTICS_STOP, "STOP"],
-              [Blockly.Msg.ROBOTICS_NONE, "None"],
-            ]
-          },
-        ],
-        "inputsInline": true,
-        "previousStatement": null,
-        "nextStatement": null,
-        "colour": roboticsLineBlockColor,
-        "tooltip": "",
-        "helpUrl": ""
-      }
-    );
-  }
-};
-
-Blockly.Python["robotics_follow_line_until_end"] = function (block) {
-  var stop = block.getFieldValue('stop');
-  // TODO: Assemble Python into code variable.
-  var code = "await robot.follow_line_until_end(then=" + stop +  ")\n";
-  return code;
-};
-
-Blockly.Blocks['robotics_turn_until_line_detected_then'] = {
-  init: function () {
-    this.jsonInit(
-      {
-        "type": "robotics_turn_until_line_detected_then",
-        "message0": Blockly.Msg.ROBOTICS_ROBOT_TURN_UNTIL_LINE_DETECTED,
-        "args0": [
-          {
-            "type": "field_dropdown",
-            "name": "direction",
-            "options": [
-              [
-                {
-                  "src": "static/blocks/block_images/860774.svg",
-                  "width": 15,
-                  "height": 15,
-                  "alt": "*"
-                },
-                "left"
-              ],
-              [
-                {
-                  "src": "static/blocks/block_images/74474.svg",
-                  "width": 15,
-                  "height": 15,
-                  "alt": "*"
-                },
-                "right"
-              ]
-            ]
-          },
-          {
-            type: "field_dropdown",
-            name: "stop",
-            options: [
-              [Blockly.Msg.ROBOTICS_BRAKE , "BRAKE"],
-              [Blockly.Msg.ROBOTICS_STOP, "STOP"],
-              [Blockly.Msg.ROBOTICS_NONE, "None"],
-            ]
-          },
-        ],
-        "inputsInline": true,
-        "previousStatement": null,
-        "nextStatement": null,
-        "colour": roboticsLineBlockColor,
-        "tooltip": "",
-        "helpUrl": ""
-      }
-    );
-  }
-};
-
-Blockly.Python["robotics_turn_until_line_detected_then"] = function (block) {
-  var dir = block.getFieldValue('direction');
-  var stop = block.getFieldValue('stop');
-  // TODO: Assemble Python into code variable.
-  var code = "";
-  if (dir == "left") {
-    code = "await robot.turn_until_line_detected(steering=-100, then=" + stop + ")\n";
-  } else {
-    code = "await robot.turn_until_line_detected(steering=100, then=" + stop +  ")\n";
-  }
-  return code;
-};
-
-Blockly.Blocks['robotics_follow_line_by_time'] = {
-  init: function () {
-    this.jsonInit(
-      {
-        "type": "robotics_follow_line_by_time",
-        "message0": Blockly.Msg.ROBOTICS_ROBOT_FOLLOW_LINE_BY_TIME,
-        "args0": [
-          {
-            type: "input_value",
-            check: "Number",
-            value: 1,
-            name: "duration",
-          },
-          {
-            type: "field_dropdown",
-            name: "stop",
-            options: [
-              [Blockly.Msg.ROBOTICS_BRAKE , "BRAKE"],
-              [Blockly.Msg.ROBOTICS_STOP, "STOP"],
-              [Blockly.Msg.ROBOTICS_NONE, "None"],
-            ]
-          },
-        ],
-        "inputsInline": true,
-        "previousStatement": null,
-        "nextStatement": null,
-        "colour": roboticsLineBlockColor,
-        "tooltip": "",
-        "helpUrl": ""
-      }
-    );
-  }
-};
-
-Blockly.Python["robotics_follow_line_by_time"] = function (block) {
-  var duration = Blockly.Python.valueToCode(block, 'duration', Blockly.Python.ORDER_ATOMIC);
-  var stop = block.getFieldValue('stop');
-  // TODO: Assemble Python into code variable.
-  var code = "await robot.follow_line_by_time(" + duration + ", then=" + stop + ")\n";
-  return code;
-};
-
-
-Blockly.Blocks['robotics_follow_line_until'] = {
-  init: function () {
-    this.jsonInit(
-      {
-        "type": "robotics_follow_line_until",
-        "message0": Blockly.Msg.ROBOTICS_ROBOT_FOLLOW_LINE_UNTIL,
-        "args0": [
-          {
-            "type": "input_value",
-            "name": "condition",
-          },
-          {
-            type: "field_dropdown",
-            name: "stop",
-            options: [
-              [Blockly.Msg.ROBOTICS_BRAKE , "BRAKE"],
-              [Blockly.Msg.ROBOTICS_STOP, "STOP"],
-              [Blockly.Msg.ROBOTICS_NONE, "None"],
-            ]
-          },
-        ],
-        "inputsInline": true,
-        "previousStatement": null,
-        "nextStatement": null,
-        "colour": roboticsLineBlockColor,
-        "tooltip": "",
-        "helpUrl": ""
-      }
-    );
-  }
-};
-
-Blockly.Python["robotics_follow_line_until"] = function (block) {
-  var condition = Blockly.Python.valueToCode(block, 'condition', Blockly.Python.ORDER_ATOMIC);
-  var stop = block.getFieldValue('stop');
-  // TODO: Assemble Python into code variable.
-  var code = "await robot.follow_line_until(" + "lambda: " + condition + ", then=" + stop + ")\n";
-  return code;
-};
-
 // --------------------------------------------------------------------------------------------------------
 // HuskyLens blocks ---------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------------------
@@ -3044,6 +1471,8 @@ const KBotPIDColor = "#00a86b";
 const KBotTrackColor = "#9b59b6";
 const KBotGyroColor = "#2980b9";
 const KBotTestColor = "#7f8c8d";
+const KBotGamepadColor = "#e74c3c";
+const KBotLineColor = "#34ccf1";
 
 // Block 1: kbot_motor_init
 Blockly.Blocks['kbot_motor_init'] = {
@@ -3759,5 +2188,734 @@ Blockly.Python['kbot_motor_run'] = function (block) {
   Blockly.Python.definitions_['init_motor_driver_v2'] = 'md_v2 = MotorDriverV2()';
   var speedExpr = (reverse == 'yes') ? '-(' + speed + ')' : speed;
   var code = "md_v2.set_motors(" + motor + ", " + speedExpr + ")\n";
+  return code;
+};
+
+// ============ KBOT Gamepad ============
+
+// Block: kbot_gamepad_init
+Blockly.Blocks['kbot_gamepad_init'] = {
+  init: function () {
+    this.jsonInit({
+      type: "kbot_gamepad_init",
+      message0: "KBOT bật chế độ gamepad với độ nhạy %1",
+      previousStatement: null,
+      nextStatement: null,
+      args0: [
+        {
+          type: "input_value",
+          check: "Number",
+          value: 3,
+          name: "accel_steps",
+        },
+      ],
+      colour: KBotGamepadColor,
+      inputsInline: true,
+      tooltip: "Khởi tạo gamepad và bật điều khiển từ xa",
+      helpUrl: ""
+    });
+  },
+};
+
+Blockly.Python['kbot_gamepad_init'] = function (block) {
+  var steps = Blockly.Python.valueToCode(block, 'accel_steps', Blockly.Python.ORDER_ATOMIC);
+  Blockly.Python.definitions_['import_ble'] = 'from ble import *';
+  Blockly.Python.definitions_['import_robotics_gamepad'] = 'from gamepad import *';
+  Blockly.Python.definitions_['init_robotics_gamepad'] = 'gamepad = Gamepad()';
+
+  var code = 'create_task(ble.wait_for_msg())\n';
+  code += 'create_task(gamepad.run())\n';
+  code += 'create_task(kbot.run_teleop(gamepad, accel_steps=' + steps + '))\n';
+  return code;
+};
+
+// Block: kbot_gamepad_on_button
+Blockly.Blocks['kbot_gamepad_on_button'] = {
+  init: function () {
+    this.jsonInit({
+      colour: KBotGamepadColor,
+      message0: "KBOT khi nhấn nút %1 %2 %3",
+      tooltip: "Thực hiện hành động khi nhấn nút trên gamepad",
+      args0: [
+        {
+          type: "field_dropdown",
+          name: "BUTTON",
+          options: [
+            [
+              {
+                "src": "static/blocks/block_images/59043.svg",
+                "width": 15,
+                "height": 15,
+                "alt": "*"
+              },
+              "BTN_UP"
+            ],
+            [
+              {
+                "src": "static/blocks/block_images/959159.svg",
+                "width": 15,
+                "height": 15,
+                "alt": "*"
+              },
+              "BTN_DOWN"
+            ],
+            [
+              {
+                "src": "static/blocks/block_images/arrow-left.svg",
+                "width": 15,
+                "height": 15,
+                "alt": "side left"
+              },
+              "BTN_LEFT"
+            ],
+            [
+              {
+                "src": "static/blocks/block_images/arrow-right.svg",
+                "width": 15,
+                "height": 15,
+                "alt": "side right"
+              },
+              "BTN_RIGHT"
+            ],
+            [
+              {
+                "src": "static/blocks/block_images/gamepad-square.png",
+                "width": 15,
+                "height": 15,
+                "alt": "*"
+              },
+              "BTN_SQUARE"
+            ],
+            [
+              {
+                "src": "static/blocks/block_images/gamepad-circle.png",
+                "width": 15,
+                "height": 15,
+                "alt": "*"
+              },
+              "BTN_CIRCLE"
+            ],
+            [
+              {
+                "src": "static/blocks/block_images/gamepad-cross.png",
+                "width": 15,
+                "height": 15,
+                "alt": "*"
+              },
+              "BTN_CROSS"
+            ],
+            [
+              {
+                "src": "static/blocks/block_images/gamepad-triangle.png",
+                "width": 15,
+                "height": 15,
+                "alt": "*"
+              },
+              "BTN_TRIANGLE"
+            ],
+            ["L1", "BTN_L1"],
+            ["R1", "BTN_R1"],
+            ["L2", "BTN_L2"],
+            ["R2", "BTN_R2"],
+            ["SHARE", "BTN_M1"],
+            ["OPTIONS", "BTN_M2"],
+            ["Left Joystick", "BTN_THUMBL"],
+            ["Right Joystick", "BTN_THUMBR"],
+          ],
+        },
+        {
+          type: "input_dummy",
+        },
+        {
+          type: "input_statement",
+          name: "ACTION",
+        },
+      ],
+      helpUrl: "",
+    });
+  }
+};
+
+Blockly.Python['kbot_gamepad_on_button'] = function (block) {
+  var button = block.getFieldValue('BUTTON');
+  var statements_action = Blockly.Python.statementToCode(block, 'ACTION');
+
+  var globals = buildGlobalString(block);
+
+  var cbFunctionName = Blockly.Python.provideFunction_(
+    'on_cmd_' + button,
+    (globals != '') ?
+      ['def ' + Blockly.Python.FUNCTION_NAME_PLACEHOLDER_ + '():',
+        globals,
+        statements_action || Blockly.Python.PASS
+      ] :
+      ['def ' + Blockly.Python.FUNCTION_NAME_PLACEHOLDER_ + '():',
+        statements_action || Blockly.Python.PASS
+      ]);
+
+  var code = 'kbot.on_teleop_command(' + button + ', ' + cbFunctionName + ')';
+  Blockly.Python.definitions_['setup_kbot_on_teleop_command' + button] = code;
+
+  return '';
+};
+
+// Block: kbot_gamepad_read_button
+Blockly.Blocks['kbot_gamepad_read_button'] = {
+  init: function () {
+    this.jsonInit({
+      colour: KBotGamepadColor,
+      tooltip: "Đọc trạng thái nút gamepad",
+      message0: "KBOT nút %1 được nhấn?",
+      args0: [
+        {
+          type: "field_dropdown",
+          name: "BUTTON",
+          options: [
+            [
+              {
+                "src": "static/blocks/block_images/59043.svg",
+                "width": 15,
+                "height": 15,
+                "alt": "*"
+              },
+              "BTN_UP"
+            ],
+            [
+              {
+                "src": "static/blocks/block_images/959159.svg",
+                "width": 15,
+                "height": 15,
+                "alt": "*"
+              },
+              "BTN_DOWN"
+            ],
+            [
+              {
+                "src": "static/blocks/block_images/arrow-left.svg",
+                "width": 15,
+                "height": 15,
+                "alt": "side left"
+              },
+              "BTN_LEFT"
+            ],
+            [
+              {
+                "src": "static/blocks/block_images/arrow-right.svg",
+                "width": 15,
+                "height": 15,
+                "alt": "side right"
+              },
+              "BTN_RIGHT"
+            ],
+            [
+              {
+                "src": "static/blocks/block_images/gamepad-square.png",
+                "width": 15,
+                "height": 15,
+                "alt": "*"
+              },
+              "BTN_SQUARE"
+            ],
+            [
+              {
+                "src": "static/blocks/block_images/gamepad-circle.png",
+                "width": 15,
+                "height": 15,
+                "alt": "*"
+              },
+              "BTN_CIRCLE"
+            ],
+            [
+              {
+                "src": "static/blocks/block_images/gamepad-cross.png",
+                "width": 15,
+                "height": 15,
+                "alt": "*"
+              },
+              "BTN_CROSS"
+            ],
+            [
+              {
+                "src": "static/blocks/block_images/gamepad-triangle.png",
+                "width": 15,
+                "height": 15,
+                "alt": "*"
+              },
+              "BTN_TRIANGLE"
+            ],
+            ["L1", "BTN_L1"],
+            ["R1", "BTN_R1"],
+            ["L2", "BTN_L2"],
+            ["R2", "BTN_R2"],
+          ],
+        }
+      ],
+      output: "Boolean",
+      helpUrl: "",
+    });
+  },
+};
+
+Blockly.Python['kbot_gamepad_read_button'] = function (block) {
+  var button = block.getFieldValue("BUTTON");
+  var code = 'gamepad.data[' + button + '] == 1';
+  return [code, Blockly.Python.ORDER_NONE];
+};
+
+// Block: kbot_gamepad_read_joystick
+Blockly.Blocks['kbot_gamepad_read_joystick'] = {
+  init: function () {
+    this.jsonInit({
+      colour: KBotGamepadColor,
+      tooltip: "Đọc giá trị joystick",
+      message0: "KBOT joystick %1 giá trị %2",
+      args0: [
+        {
+          type: "field_dropdown",
+          name: "joystick",
+          options: [
+            ["Trái", "AL"],
+            ["Phải", "AR"]
+          ]
+        },
+        {
+          type: "field_dropdown",
+          name: "data",
+          options: [
+            ["X", "X"],
+            ["Y", "Y"],
+            ["Hướng", "_DIR"],
+            ["Khoảng cách", "_DISTANCE"]
+          ]
+        }
+      ],
+      output: "Number",
+      helpUrl: "",
+    });
+  },
+};
+
+Blockly.Python['kbot_gamepad_read_joystick'] = function (block) {
+  var joystick = block.getFieldValue("joystick");
+  var data = block.getFieldValue("data");
+  var code = 'gamepad.data[' + joystick + data + ']';
+  return [code, Blockly.Python.ORDER_NONE];
+};
+
+// Block: kbot_gamepad_pause
+Blockly.Blocks['kbot_gamepad_pause'] = {
+  init: function () {
+    this.jsonInit({
+      type: "kbot_gamepad_pause",
+      message0: "KBOT gamepad %1",
+      previousStatement: null,
+      nextStatement: null,
+      args0: [
+        {
+          type: "field_dropdown",
+          name: "action",
+          options: [
+            ["tạm dừng", "True"],
+            ["tiếp tục", "False"],
+          ],
+        },
+      ],
+      colour: KBotGamepadColor,
+      inputsInline: true,
+      tooltip: "Tạm dừng hoặc tiếp tục điều khiển gamepad",
+      helpUrl: ""
+    });
+  },
+};
+
+Blockly.Python['kbot_gamepad_pause'] = function (block) {
+  var action = block.getFieldValue("action");
+  var code = "kbot.mode_auto = " + action + "\n";
+  return code;
+};
+
+// ============ KBOT Line Sensor ============
+
+// Block: kbot_line_sensor_init
+Blockly.Blocks['kbot_line_sensor_init'] = {
+  init: function () {
+    this.jsonInit({
+      type: "kbot_line_sensor_init",
+      message0: "KBOT khởi tạo cảm biến dò line I2C",
+      args0: [],
+      inputsInline: true,
+      previousStatement: null,
+      nextStatement: null,
+      colour: KBotLineColor,
+      tooltip: "Khởi tạo cảm biến dò line I2C cho KBOT",
+      helpUrl: ""
+    });
+  }
+};
+
+Blockly.Python['kbot_line_sensor_init'] = function (block) {
+  Blockly.Python.definitions_['import_robotics_line_sensor'] = 'from line_sensor import *';
+  Blockly.Python.definitions_['init_robotics_line_sensor'] = 'line_sensor = LineSensorI2C()';
+  var code = "kbot.line_sensor(line_sensor)\n";
+  return code;
+};
+
+// Block: kbot_line_sensor_read_all
+Blockly.Blocks['kbot_line_sensor_read_all'] = {
+  init: function () {
+    this.jsonInit({
+      type: "kbot_line_sensor_read_all",
+      message0: "KBOT cảm biến line đọc %1 %2 %3 %4",
+      args0: [
+        {
+          type: "field_dropdown",
+          name: "S1",
+          options: [
+            [
+              {
+                "src": ImgUrl2 + 'line_finder_none_detect.png',
+                "width": 15,
+                "height": 15,
+                "alt": "none"
+              },
+              "0"
+            ],
+            [
+              {
+                "src": ImgUrl2 + 'line_finder_detect.png',
+                "width": 15,
+                "height": 15,
+                "alt": "detect"
+              },
+              "1"
+            ]
+          ]
+        },
+        {
+          type: "field_dropdown",
+          name: "S2",
+          options: [
+            [
+              {
+                "src": ImgUrl2 + 'line_finder_none_detect.png',
+                "width": 15,
+                "height": 15,
+                "alt": "none"
+              },
+              "0"
+            ],
+            [
+              {
+                "src": ImgUrl2 + 'line_finder_detect.png',
+                "width": 15,
+                "height": 15,
+                "alt": "detect"
+              },
+              "1"
+            ]
+          ]
+        },
+        {
+          type: "field_dropdown",
+          name: "S3",
+          options: [
+            [
+              {
+                "src": ImgUrl2 + 'line_finder_none_detect.png',
+                "width": 15,
+                "height": 15,
+                "alt": "none"
+              },
+              "0"
+            ],
+            [
+              {
+                "src": ImgUrl2 + 'line_finder_detect.png',
+                "width": 15,
+                "height": 15,
+                "alt": "detect"
+              },
+              "1"
+            ]
+          ]
+        },
+        {
+          type: "field_dropdown",
+          name: "S4",
+          options: [
+            [
+              {
+                "src": ImgUrl2 + 'line_finder_none_detect.png',
+                "width": 15,
+                "height": 15,
+                "alt": "none"
+              },
+              "0"
+            ],
+            [
+              {
+                "src": ImgUrl2 + 'line_finder_detect.png',
+                "width": 15,
+                "height": 15,
+                "alt": "detect"
+              },
+              "1"
+            ]
+          ]
+        }
+      ],
+      colour: KBotLineColor,
+      output: "Boolean",
+      tooltip: "Kiểm tra trạng thái 4 cảm biến dò line",
+      helpUrl: ""
+    });
+  }
+};
+
+Blockly.Python['kbot_line_sensor_read_all'] = function (block) {
+  Blockly.Python.definitions_['import_line_sensor'] = 'from line_sensor import *';
+  Blockly.Python.definitions_['init_robotics_line_sensor'] = 'line_sensor = LineSensorI2C()';
+  var S1 = block.getFieldValue("S1");
+  var S2 = block.getFieldValue("S2");
+  var S3 = block.getFieldValue("S3");
+  var S4 = block.getFieldValue("S4");
+  var code = "line_sensor.read() == (" + S1 + ", " + S2 + ", " + S3 + ", " + S4 + ")";
+  return [code, Blockly.Python.ORDER_NONE];
+};
+
+// Block: kbot_line_sensor_read
+Blockly.Blocks['kbot_line_sensor_read'] = {
+  init: function () {
+    this.jsonInit({
+      type: "kbot_line_sensor_read",
+      message0: "KBOT cảm biến line %1",
+      args0: [
+        {
+          type: "field_dropdown",
+          name: "port",
+          options: [
+            ["S1", "0"],
+            ["S2", "1"],
+            ["S3", "2"],
+            ["S4", "3"],
+          ],
+        },
+      ],
+      colour: KBotLineColor,
+      output: "Boolean",
+      tooltip: "Đọc giá trị một cảm biến dò line",
+      helpUrl: ""
+    });
+  }
+};
+
+Blockly.Python['kbot_line_sensor_read'] = function (block) {
+  var port = block.getFieldValue("port");
+  var code = "line_sensor.read(" + port + ")";
+  return [code, Blockly.Python.ORDER_NONE];
+};
+
+// Block: kbot_follow_line_until_cross
+Blockly.Blocks['kbot_follow_line_until_cross'] = {
+  init: function () {
+    this.jsonInit({
+      type: "kbot_follow_line_until_cross",
+      message0: "KBOT dò line đến ngã tư rồi %1",
+      args0: [
+        {
+          type: "field_dropdown",
+          name: "stop",
+          options: [
+            ["phanh", "BRAKE"],
+            ["dừng", "STOP"],
+            ["không dừng", "None"],
+          ]
+        },
+      ],
+      inputsInline: true,
+      previousStatement: null,
+      nextStatement: null,
+      colour: KBotLineColor,
+      tooltip: "Dò line cho đến khi gặp ngã tư",
+      helpUrl: ""
+    });
+  }
+};
+
+Blockly.Python['kbot_follow_line_until_cross'] = function (block) {
+  var stop = block.getFieldValue('stop');
+  var code = "await kbot.follow_line_until_cross(then=" + stop + ")\n";
+  return code;
+};
+
+// Block: kbot_follow_line_until_end
+Blockly.Blocks['kbot_follow_line_until_end'] = {
+  init: function () {
+    this.jsonInit({
+      type: "kbot_follow_line_until_end",
+      message0: "KBOT dò line đến cuối line rồi %1",
+      args0: [
+        {
+          type: "field_dropdown",
+          name: "stop",
+          options: [
+            ["phanh", "BRAKE"],
+            ["dừng", "STOP"],
+            ["không dừng", "None"],
+          ]
+        },
+      ],
+      inputsInline: true,
+      previousStatement: null,
+      nextStatement: null,
+      colour: KBotLineColor,
+      tooltip: "Dò line cho đến khi hết line",
+      helpUrl: ""
+    });
+  }
+};
+
+Blockly.Python['kbot_follow_line_until_end'] = function (block) {
+  var stop = block.getFieldValue('stop');
+  var code = "await kbot.follow_line_until_end(then=" + stop + ")\n";
+  return code;
+};
+
+// Block: kbot_turn_until_line_detected
+Blockly.Blocks['kbot_turn_until_line_detected'] = {
+  init: function () {
+    this.jsonInit({
+      type: "kbot_turn_until_line_detected",
+      message0: "KBOT xoay %1 đến khi thấy line rồi %2",
+      args0: [
+        {
+          type: "field_dropdown",
+          name: "direction",
+          options: [
+            [
+              {
+                "src": "static/blocks/block_images/860774.svg",
+                "width": 15,
+                "height": 15,
+                "alt": "*"
+              },
+              "left"
+            ],
+            [
+              {
+                "src": "static/blocks/block_images/74474.svg",
+                "width": 15,
+                "height": 15,
+                "alt": "*"
+              },
+              "right"
+            ]
+          ]
+        },
+        {
+          type: "field_dropdown",
+          name: "stop",
+          options: [
+            ["phanh", "BRAKE"],
+            ["dừng", "STOP"],
+            ["không dừng", "None"],
+          ]
+        },
+      ],
+      inputsInline: true,
+      previousStatement: null,
+      nextStatement: null,
+      colour: KBotLineColor,
+      tooltip: "Xoay cho đến khi phát hiện line",
+      helpUrl: ""
+    });
+  }
+};
+
+Blockly.Python['kbot_turn_until_line_detected'] = function (block) {
+  var dir = block.getFieldValue('direction');
+  var stop = block.getFieldValue('stop');
+  if (dir == "left") {
+    return "await kbot.turn_until_line_detected(steering=-100, then=" + stop + ")\n";
+  } else {
+    return "await kbot.turn_until_line_detected(steering=100, then=" + stop + ")\n";
+  }
+};
+
+// Block: kbot_follow_line_by_time
+Blockly.Blocks['kbot_follow_line_by_time'] = {
+  init: function () {
+    this.jsonInit({
+      type: "kbot_follow_line_by_time",
+      message0: "KBOT dò line trong %1 giây rồi %2",
+      args0: [
+        {
+          type: "input_value",
+          check: "Number",
+          value: 1,
+          name: "duration",
+        },
+        {
+          type: "field_dropdown",
+          name: "stop",
+          options: [
+            ["phanh", "BRAKE"],
+            ["dừng", "STOP"],
+            ["không dừng", "None"],
+          ]
+        },
+      ],
+      inputsInline: true,
+      previousStatement: null,
+      nextStatement: null,
+      colour: KBotLineColor,
+      tooltip: "Dò line trong khoảng thời gian nhất định",
+      helpUrl: ""
+    });
+  }
+};
+
+Blockly.Python['kbot_follow_line_by_time'] = function (block) {
+  var duration = Blockly.Python.valueToCode(block, 'duration', Blockly.Python.ORDER_ATOMIC);
+  var stop = block.getFieldValue('stop');
+  var code = "await kbot.follow_line_by_time(" + duration + ", then=" + stop + ")\n";
+  return code;
+};
+
+// Block: kbot_follow_line_until
+Blockly.Blocks['kbot_follow_line_until'] = {
+  init: function () {
+    this.jsonInit({
+      type: "kbot_follow_line_until",
+      message0: "KBOT dò line cho đến khi %1 rồi %2",
+      args0: [
+        {
+          type: "input_value",
+          name: "condition",
+        },
+        {
+          type: "field_dropdown",
+          name: "stop",
+          options: [
+            ["phanh", "BRAKE"],
+            ["dừng", "STOP"],
+            ["không dừng", "None"],
+          ]
+        },
+      ],
+      inputsInline: true,
+      previousStatement: null,
+      nextStatement: null,
+      colour: KBotLineColor,
+      tooltip: "Dò line cho đến khi điều kiện đúng",
+      helpUrl: ""
+    });
+  }
+};
+
+Blockly.Python['kbot_follow_line_until'] = function (block) {
+  var condition = Blockly.Python.valueToCode(block, 'condition', Blockly.Python.ORDER_ATOMIC);
+  var stop = block.getFieldValue('stop');
+  var code = "await kbot.follow_line_until(lambda: " + condition + ", then=" + stop + ")\n";
   return code;
 };
