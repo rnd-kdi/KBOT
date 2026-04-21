@@ -2937,7 +2937,7 @@ Blockly.Blocks['huskylens_i2c_init'] = {
 Blockly.Python['huskylens_i2c_init'] = function (block) {
   Blockly.Python.definitions_['import_huskylens'] = 'from HuskyLens import HuskyLens';
   Blockly.Python.definitions_['import_setting_i2c'] = 'from setting import SDA_PIN, SCL_PIN';
-  Blockly.Python.definitions_['create_huskylens'] = 'husky = HuskyLens(protocol="i2c", sda_pin=SDA_PIN, scl_pin=SCL_PIN)';
+  Blockly.Python.definitions_['create_huskylens'] = 'husky = HuskyLens(sda_pin=SDA_PIN, scl_pin=SCL_PIN)';
   return '';
 };
 
