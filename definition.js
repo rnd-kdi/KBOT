@@ -3503,7 +3503,7 @@ Blockly.Blocks['kbot_pid_update'] = {
   init: function () {
     this.jsonInit({
       type: "kbot_pid_update",
-      message0: "KBOT PID motor update Kp %1 Ki %2 Kd %3",
+      message0: "KBOT PID motor cài đặt Kp %1 Ki %2 Kd %3",
       previousStatement: null,
       nextStatement: null,
       args0: [
@@ -3693,7 +3693,7 @@ Blockly.Blocks['kbot_track_speed'] = {
         {
           type: "field_dropdown",
           name: "OUTPUT",
-          options: [["vT (trái)", "track_vt"], ["vP (phải)", "track_vp"]]
+          options: [["tốc độ trái", "track_vt"], ["tốc độ phải", "track_vp"]]
         }
       ],
       colour: KBotTrackColor,
