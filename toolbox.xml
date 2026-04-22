@@ -1,211 +1,213 @@
 <xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display: none">
   <category id="kbot" name="KBOT" colour="#ff7513" icon="camera">
-    <label text="KBOT Robot" web-class="blockLabelStyle"></label>
-    <block type="kbot_motor_init" />
-    <block type="kbot_set_encoder">
-      <value name="rpm">
-        <shadow type="math_number">
-          <field name="NUM">350</field>
-        </shadow>
-      </value>
-      <value name="ppr">
-        <shadow type="math_number">
-          <field name="NUM">11</field>
-        </shadow>
-      </value>
-      <value name="gears">
-        <shadow type="math_number">
-          <field name="NUM">34</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="kbot_set_speed">
-      <value name="speed">
-        <shadow type="math_number">
-          <field name="NUM">70</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="kbot_move">
-      <value name="speed">
-        <shadow type="math_number">
-          <field name="NUM">70</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="kbot_move_for">
-      <value name="speed">
-        <shadow type="math_number">
-          <field name="NUM">70</field>
-        </shadow>
-      </value>
-      <value name="amount">
-        <shadow type="math_number">
-          <field name="NUM">2</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="kbot_run_speed">
-      <value name="left_speed">
-        <shadow type="math_number">
-          <field name="NUM">50</field>
-        </shadow>
-      </value>
-      <value name="right_speed">
-        <shadow type="math_number">
-          <field name="NUM">50</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="kbot_stop" />
+    <category id="kbot-move" name="Di chuyển" colour="#ff7513" icon="arrows-alt">
+      <block type="kbot_motor_init" />
+      <block type="kbot_set_encoder">
+        <value name="rpm">
+          <shadow type="math_number">
+            <field name="NUM">350</field>
+          </shadow>
+        </value>
+        <value name="ppr">
+          <shadow type="math_number">
+            <field name="NUM">11</field>
+          </shadow>
+        </value>
+        <value name="gears">
+          <shadow type="math_number">
+            <field name="NUM">34</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="kbot_set_speed">
+        <value name="speed">
+          <shadow type="math_number">
+            <field name="NUM">70</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="kbot_move">
+        <value name="speed">
+          <shadow type="math_number">
+            <field name="NUM">70</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="kbot_move_for">
+        <value name="speed">
+          <shadow type="math_number">
+            <field name="NUM">70</field>
+          </shadow>
+        </value>
+        <value name="amount">
+          <shadow type="math_number">
+            <field name="NUM">2</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="kbot_run_speed">
+        <value name="left_speed">
+          <shadow type="math_number">
+            <field name="NUM">50</field>
+          </shadow>
+        </value>
+        <value name="right_speed">
+          <shadow type="math_number">
+            <field name="NUM">50</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="kbot_stop" />
+    </category>
 
-    <sep gap="30"></sep>
-    <label text="Gamepad" web-class="blockLabelStyle"></label>
-    <block type="kbot_gamepad_init">
-      <value name="accel_steps">
-        <shadow type="math_number">
-          <field name="NUM">3</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="kbot_gamepad_on_button" />
-    <block type="kbot_gamepad_read_button" />
-    <block type="kbot_gamepad_read_joystick" />
-    <block type="kbot_gamepad_pause" />
+    <category id="kbot-gamepad" name="Gamepad" colour="#e74c3c" icon="gamepad">
+      <block type="kbot_gamepad_init">
+        <value name="accel_steps">
+          <shadow type="math_number">
+            <field name="NUM">3</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="kbot_gamepad_on_button" />
+      <block type="kbot_gamepad_read_button" />
+      <block type="kbot_gamepad_read_joystick" />
+      <block type="kbot_gamepad_pause" />
+    </category>
 
-    <sep gap="30"></sep>
-    <label text="Dò line" web-class="blockLabelStyle"></label>
-    <block type="kbot_line_sensor_init" />
-    <block type="kbot_line_sensor_read_all" />
-    <block type="kbot_line_sensor_read" />
-    <block type="kbot_follow_line_until_cross" />
-    <block type="kbot_turn_until_line_detected" />
-    <block type="kbot_follow_line_until_end" />
-    <block type="kbot_follow_line_by_time">
-      <value name="duration">
-        <shadow type="math_number">
-          <field name="NUM">1</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="kbot_follow_line_until">
-      <value name="condition"></value>
-    </block>
+    <category id="kbot-line" name="Dò line" colour="#34ccf1" icon="route">
+      <block type="kbot_line_sensor_init" />
+      <block type="kbot_line_sensor_read_all" />
+      <block type="kbot_line_sensor_read" />
+      <block type="kbot_follow_line_until_cross" />
+      <block type="kbot_turn_until_line_detected" />
+      <block type="kbot_follow_line_until_end" />
+      <block type="kbot_follow_line_by_time">
+        <value name="duration">
+          <shadow type="math_number">
+            <field name="NUM">1</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="kbot_follow_line_until">
+        <value name="condition"></value>
+      </block>
+    </category>
 
-    <sep gap="30"></sep>
-    <label text="Xoay theo góc" web-class="blockLabelStyle"></label>
-    <block type="kbot_gyro_init">
-      <value name="samples">
-        <shadow type="math_number">
-          <field name="NUM">250</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="kbot_turn_degree">
-      <value name="speed">
-        <shadow type="math_number">
-          <field name="NUM">50</field>
-        </shadow>
-      </value>
-      <value name="degree">
-        <shadow type="math_number">
-          <field name="NUM">90</field>
-        </shadow>
-      </value>
-    </block>
+    <category id="kbot-gyro" name="Xoay theo góc" colour="#2980b9" icon="compass">
+      <block type="kbot_gyro_init">
+        <value name="samples">
+          <shadow type="math_number">
+            <field name="NUM">250</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="kbot_turn_degree">
+        <value name="speed">
+          <shadow type="math_number">
+            <field name="NUM">50</field>
+          </shadow>
+        </value>
+        <value name="degree">
+          <shadow type="math_number">
+            <field name="NUM">90</field>
+          </shadow>
+        </value>
+      </block>
+    </category>
 
-    <sep gap="30"></sep>
-    <label text="HuskyLens" web-class="blockLabelStyle"></label>
-    <block type="huskylens_i2c_init" />
-    <block type="huskylens_update_block" />
-    <block type="huskylens_bounding_box" />
-    <block type="huskylens_update_arrow" />
-    <block type="huskylens_line_tracking" />
+    <category id="kbot-huskylens" name="HuskyLens" colour="#8B4513" icon="eye">
+      <block type="huskylens_i2c_init" />
+      <block type="huskylens_update_block" />
+      <block type="huskylens_bounding_box" />
+      <block type="huskylens_update_arrow" />
+      <block type="huskylens_line_tracking" />
+    </category>
 
-    <sep gap="30"></sep>
-    <label text="Vision Tracking" web-class="blockLabelStyle"></label>
-    <block type="kbot_track_set_pid">
-      <value name="kp">
-        <shadow type="math_number">
-          <field name="NUM">0.23</field>
-        </shadow>
-      </value>
-      <value name="ki">
-        <shadow type="math_number">
-          <field name="NUM">0</field>
-        </shadow>
-      </value>
-      <value name="kd">
-        <shadow type="math_number">
-          <field name="NUM">0.4</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="kbot_track_set_speed">
-      <value name="min_speed">
-        <shadow type="math_number">
-          <field name="NUM">25</field>
-        </shadow>
-      </value>
-      <value name="max_speed">
-        <shadow type="math_number">
-          <field name="NUM">80</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="kbot_track_update">
-      <value name="target">
-        <shadow type="math_number">
-          <field name="NUM">155</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="kbot_track_speed" />
+    <category id="kbot-tracking" name="Vision Tracking" colour="#9b59b6" icon="crosshairs">
+      <block type="kbot_track_set_pid">
+        <value name="kp">
+          <shadow type="math_number">
+            <field name="NUM">0.23</field>
+          </shadow>
+        </value>
+        <value name="ki">
+          <shadow type="math_number">
+            <field name="NUM">0</field>
+          </shadow>
+        </value>
+        <value name="kd">
+          <shadow type="math_number">
+            <field name="NUM">0.4</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="kbot_track_set_speed">
+        <value name="min_speed">
+          <shadow type="math_number">
+            <field name="NUM">25</field>
+          </shadow>
+        </value>
+        <value name="max_speed">
+          <shadow type="math_number">
+            <field name="NUM">80</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="kbot_track_update">
+        <value name="target">
+          <shadow type="math_number">
+            <field name="NUM">155</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="kbot_track_speed" />
+    </category>
 
-    <sep gap="30"></sep>
-    <label text="PID Motor (RPM chính xác)" web-class="blockLabelStyle"></label>
-    <block type="kbot_set_target_rpm">
-      <value name="left_rpm">
-        <shadow type="math_number">
-          <field name="NUM">40</field>
-        </shadow>
-      </value>
-      <value name="right_rpm">
-        <shadow type="math_number">
-          <field name="NUM">40</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="kbot_pid_update">
-      <value name="kp">
-        <shadow type="math_number">
-          <field name="NUM">1.5</field>
-        </shadow>
-      </value>
-      <value name="ki">
-        <shadow type="math_number">
-          <field name="NUM">0.07</field>
-        </shadow>
-      </value>
-      <value name="kd">
-        <shadow type="math_number">
-          <field name="NUM">0.5</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="kbot_pid_stop" />
-    <block type="kbot_pid_reset" />
+    <category id="kbot-pid" name="PID Motor" colour="#00a86b" icon="tachometer-alt">
+      <block type="kbot_set_target_rpm">
+        <value name="left_rpm">
+          <shadow type="math_number">
+            <field name="NUM">40</field>
+          </shadow>
+        </value>
+        <value name="right_rpm">
+          <shadow type="math_number">
+            <field name="NUM">40</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="kbot_pid_update">
+        <value name="kp">
+          <shadow type="math_number">
+            <field name="NUM">1.5</field>
+          </shadow>
+        </value>
+        <value name="ki">
+          <shadow type="math_number">
+            <field name="NUM">0.07</field>
+          </shadow>
+        </value>
+        <value name="kd">
+          <shadow type="math_number">
+            <field name="NUM">0.5</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="kbot_pid_stop" />
+      <block type="kbot_pid_reset" />
+    </category>
 
-    <sep gap="30"></sep>
-    <label text="Test động cơ nhanh" web-class="blockLabelStyle"></label>
-    <block type="kbot_motor_run">
-      <value name="speed">
-        <shadow type="math_number">
-          <field name="NUM">70</field>
-        </shadow>
-      </value>
-    </block>
+    <category id="kbot-test" name="Test động cơ" colour="#7f8c8d" icon="flask">
+      <block type="kbot_motor_run">
+        <value name="speed">
+          <shadow type="math_number">
+            <field name="NUM">70</field>
+          </shadow>
+        </value>
+      </block>
+    </category>
   </category>
+
   <category id="robotics" name="ROBOTICS" colour="#717171" icon="robot">
     <category id="motor" name="{{ROBOTICS_CAT_MOTORS}}" colour="#0090f5" icon="undo">
       <label text="{{ROBOTICS_CAT_DC_MOTORS}}" web-class="blockLabelStyle"></label>
