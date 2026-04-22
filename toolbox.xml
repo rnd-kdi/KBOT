@@ -61,40 +61,16 @@
       <block type="kbot_stop" />
 
       <sep gap="30"></sep>
-      <label text="Gamepad" web-class="blockLabelStyle"></label>
-      <block type="kbot_gamepad_init">
-        <value name="accel_steps">
+      <label text="Test động cơ nhanh" web-class="blockLabelStyle"></label>
+      <block type="kbot_motor_run">
+        <value name="speed">
           <shadow type="math_number">
-            <field name="NUM">3</field>
+            <field name="NUM">70</field>
           </shadow>
         </value>
       </block>
-      <block type="kbot_gamepad_on_button" />
-      <block type="kbot_gamepad_read_button" />
-      <block type="kbot_gamepad_read_joystick" />
-      <block type="kbot_gamepad_pause" />
 
       <sep gap="30"></sep>
-      <label text="Dò line" web-class="blockLabelStyle"></label>
-      <block type="kbot_line_sensor_init" />
-      <block type="kbot_line_sensor_read_all" />
-      <block type="kbot_line_sensor_read" />
-      <block type="kbot_follow_line_until_cross" />
-      <block type="kbot_turn_until_line_detected" />
-      <block type="kbot_follow_line_until_end" />
-      <block type="kbot_follow_line_by_time">
-        <value name="duration">
-          <shadow type="math_number">
-            <field name="NUM">1</field>
-          </shadow>
-        </value>
-      </block>
-      <block type="kbot_follow_line_until">
-        <value name="condition"></value>
-      </block>
-    </category>
-
-    <category id="kbot-advanced" name="Nâng cao" colour="#9b59b6" icon="rocket">
       <label text="Xoay theo góc" web-class="blockLabelStyle"></label>
       <block type="kbot_gyro_init">
         <value name="samples">
@@ -117,12 +93,80 @@
       </block>
 
       <sep gap="30"></sep>
+      <label text="Dò line" web-class="blockLabelStyle"></label>
+      <block type="kbot_line_sensor_init" />
+      <block type="kbot_line_sensor_read_all" />
+      <block type="kbot_line_sensor_read" />
+      <block type="kbot_follow_line_until_cross" />
+      <block type="kbot_turn_until_line_detected" />
+      <block type="kbot_follow_line_until_end" />
+      <block type="kbot_follow_line_by_time">
+        <value name="duration">
+          <shadow type="math_number">
+            <field name="NUM">1</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="kbot_follow_line_until">
+        <value name="condition"></value>
+      </block>
+
+      <sep gap="30"></sep>
+      <label text="Gamepad" web-class="blockLabelStyle"></label>
+      <block type="kbot_gamepad_init">
+        <value name="accel_steps">
+          <shadow type="math_number">
+            <field name="NUM">3</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="kbot_gamepad_on_button" />
+      <block type="kbot_gamepad_read_button" />
+      <block type="kbot_gamepad_read_joystick" />
+      <block type="kbot_gamepad_pause" />
+    </category>
+
+    <category id="kbot-advanced" name="Nâng cao" colour="#9b59b6" icon="rocket">
       <label text="HuskyLens" web-class="blockLabelStyle"></label>
       <block type="huskylens_i2c_init" />
       <block type="huskylens_update_block" />
       <block type="huskylens_bounding_box" />
       <block type="huskylens_update_arrow" />
       <block type="huskylens_line_tracking" />
+
+      <sep gap="30"></sep>
+      <label text="PID Motor (RPM chính xác)" web-class="blockLabelStyle"></label>
+      <block type="kbot_set_target_rpm">
+        <value name="left_rpm">
+          <shadow type="math_number">
+            <field name="NUM">40</field>
+          </shadow>
+        </value>
+        <value name="right_rpm">
+          <shadow type="math_number">
+            <field name="NUM">40</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="kbot_pid_update">
+        <value name="kp">
+          <shadow type="math_number">
+            <field name="NUM">1.5</field>
+          </shadow>
+        </value>
+        <value name="ki">
+          <shadow type="math_number">
+            <field name="NUM">0.07</field>
+          </shadow>
+        </value>
+        <value name="kd">
+          <shadow type="math_number">
+            <field name="NUM">0.5</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="kbot_pid_stop" />
+      <block type="kbot_pid_reset" />
 
       <sep gap="30"></sep>
       <label text="Vision Tracking" web-class="blockLabelStyle"></label>
@@ -163,50 +207,6 @@
         </value>
       </block>
       <block type="kbot_track_speed" />
-
-      <sep gap="30"></sep>
-      <label text="PID Motor (RPM chính xác)" web-class="blockLabelStyle"></label>
-      <block type="kbot_set_target_rpm">
-        <value name="left_rpm">
-          <shadow type="math_number">
-            <field name="NUM">40</field>
-          </shadow>
-        </value>
-        <value name="right_rpm">
-          <shadow type="math_number">
-            <field name="NUM">40</field>
-          </shadow>
-        </value>
-      </block>
-      <block type="kbot_pid_update">
-        <value name="kp">
-          <shadow type="math_number">
-            <field name="NUM">1.5</field>
-          </shadow>
-        </value>
-        <value name="ki">
-          <shadow type="math_number">
-            <field name="NUM">0.07</field>
-          </shadow>
-        </value>
-        <value name="kd">
-          <shadow type="math_number">
-            <field name="NUM">0.5</field>
-          </shadow>
-        </value>
-      </block>
-      <block type="kbot_pid_stop" />
-      <block type="kbot_pid_reset" />
-
-      <sep gap="30"></sep>
-      <label text="Test động cơ nhanh" web-class="blockLabelStyle"></label>
-      <block type="kbot_motor_run">
-        <value name="speed">
-          <shadow type="math_number">
-            <field name="NUM">70</field>
-          </shadow>
-        </value>
-      </block>
     </category>
   </category>
 
