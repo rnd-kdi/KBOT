@@ -4,7 +4,6 @@
     "libs": [
         "constants.py",
         "angle_sensor.py",
-        "drivebase.py",
         "gamepad.py",
         "kbot.py",
         "line_sensor.py",
@@ -15,7 +14,6 @@
         "mpu6050.py",
         "mpu9250.py",
         "pcf8574.py",
-        "pid.py",
         "ps4_receiver.py",
         "servo.py",
         "vector3d.py",
