@@ -207,6 +207,52 @@
         </value>
       </block>
       <block type="kbot_track_speed" />
+
+      <sep gap="30"></sep>
+      <label text="Dò line PID" web-class="blockLabelStyle"></label>
+      <block type="kbot_line_pid_set">
+        <value name="kp">
+          <shadow type="math_number">
+            <field name="NUM">30</field>
+          </shadow>
+        </value>
+        <value name="ki">
+          <shadow type="math_number">
+            <field name="NUM">0</field>
+          </shadow>
+        </value>
+        <value name="kd">
+          <shadow type="math_number">
+            <field name="NUM">15</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="kbot_follow_line_pid_until_cross">
+        <value name="speed">
+          <shadow type="math_number">
+            <field name="NUM">60</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="kbot_follow_line_pid_until_end">
+        <value name="speed">
+          <shadow type="math_number">
+            <field name="NUM">60</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="kbot_follow_line_pid_by_time">
+        <value name="speed">
+          <shadow type="math_number">
+            <field name="NUM">60</field>
+          </shadow>
+        </value>
+        <value name="duration">
+          <shadow type="math_number">
+            <field name="NUM">5</field>
+          </shadow>
+        </value>
+      </block>
     </category>
   </category>
 

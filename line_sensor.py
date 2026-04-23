@@ -120,15 +120,22 @@ class LineSensorI2C(LineSensor):
             self.pcf = None
             print('Line sensor not found')
 
+    def _read_byte(self):
+        # Read all 8 pins in 1 I2C transaction
+        self.pcf._read()
+        return self.pcf._port[0]
+
     def read(self, index=None):
         # 0 white, 1 black
         if self.pcf == None:
             return 0
 
-        if index == None:
-            return (self.pcf.pin(0), self.pcf.pin(1), self.pcf.pin(2), self.pcf.pin(3))
+        byte = self._read_byte()
 
-        return self.pcf.pin(index)
+        if index is not None:
+            return (byte >> index) & 1
+
+        return ((byte >> 0) & 1, (byte >> 1) & 1, (byte >> 2) & 1, (byte >> 3) & 1)
 
     '''
         Check robot position according to line
@@ -163,3 +170,29 @@ class LineSensorI2C(LineSensor):
             return LINE_RIGHT3
         elif now[3] == 1: 
             return LINE_LEFT3
+
+    '''
+        Get continuous line position for PID control.
+        Returns:
+            float: position from -1.5 (far left) to +1.5 (far right), 0 = centered
+            None: no line detected (all white)
+            Special: LINE_CROSS for intersection (all black)
+        Sensor weights: S0=-1.5, S1=-0.5, S2=+0.5, S3=+1.5
+    '''
+    _WEIGHTS = (-1.5, -0.5, 0.5, 1.5)
+
+    def position(self, last_pos=None):
+        now = self.read()
+        if now == 0:
+            return last_pos
+
+        total = now[0] + now[1] + now[2] + now[3]
+
+        if total == 0:
+            return last_pos  # no line, keep last known position
+        if total >= 3:
+            return None  # intersection or end — caller decides
+
+        w = LineSensorI2C._WEIGHTS
+        pos = (now[0]*w[0] + now[1]*w[1] + now[2]*w[2] + now[3]*w[3]) / total
+        return pos

@@ -2919,3 +2919,143 @@ Blockly.Python['kbot_follow_line_until'] = function (block) {
   var code = "await kbot.follow_line_until(lambda: " + condition + ", then=" + stop + ")\n";
   return code;
 };
+
+// ============ KBOT Line PID Blocks ============
+
+const KBotLinePIDColor = "#00a86b";
+
+// Block: kbot_line_pid_set
+Blockly.Blocks['kbot_line_pid_set'] = {
+  init: function () {
+    this.jsonInit({
+      type: "kbot_line_pid_set",
+      message0: "KBOT dò line PID cài đặt Kp %1 Ki %2 Kd %3",
+      previousStatement: null,
+      nextStatement: null,
+      args0: [
+        { type: "input_value", name: "kp", check: "Number" },
+        { type: "input_value", name: "ki", check: "Number" },
+        { type: "input_value", name: "kd", check: "Number" }
+      ],
+      inputsInline: true,
+      colour: KBotLinePIDColor,
+      tooltip: "Cài đặt thông số PID cho dò line (Kp: độ nhạy, Ki: tích lũy, Kd: giảm dao động)",
+      helpUrl: ""
+    });
+  }
+};
+
+Blockly.Python['kbot_line_pid_set'] = function (block) {
+  var kp = Blockly.Python.valueToCode(block, 'kp', Blockly.Python.ORDER_ATOMIC);
+  var ki = Blockly.Python.valueToCode(block, 'ki', Blockly.Python.ORDER_ATOMIC);
+  var kd = Blockly.Python.valueToCode(block, 'kd', Blockly.Python.ORDER_ATOMIC);
+  var code = "kbot.line_pid_set(" + kp + ", " + ki + ", " + kd + ")\n";
+  return code;
+};
+
+// Block: kbot_follow_line_pid_until_cross
+Blockly.Blocks['kbot_follow_line_pid_until_cross'] = {
+  init: function () {
+    this.jsonInit({
+      type: "kbot_follow_line_pid_until_cross",
+      message0: "KBOT dò line PID tốc độ %1 đến ngã tư rồi %2",
+      previousStatement: null,
+      nextStatement: null,
+      args0: [
+        { type: "input_value", name: "speed", check: "Number" },
+        {
+          type: "field_dropdown",
+          name: "stop",
+          options: [
+            ["phanh", "BRAKE"],
+            ["dừng", "STOP"],
+            ["không dừng", "None"]
+          ]
+        }
+      ],
+      inputsInline: true,
+      colour: KBotLinePIDColor,
+      tooltip: "Dò line bằng PID đến khi gặp ngã tư",
+      helpUrl: ""
+    });
+  }
+};
+
+Blockly.Python['kbot_follow_line_pid_until_cross'] = function (block) {
+  var speed = Blockly.Python.valueToCode(block, 'speed', Blockly.Python.ORDER_ATOMIC);
+  var stop = block.getFieldValue('stop');
+  var code = "await kbot.follow_line_pid_until_cross(base_speed=" + speed + ", then=" + stop + ")\n";
+  return code;
+};
+
+// Block: kbot_follow_line_pid_until_end
+Blockly.Blocks['kbot_follow_line_pid_until_end'] = {
+  init: function () {
+    this.jsonInit({
+      type: "kbot_follow_line_pid_until_end",
+      message0: "KBOT dò line PID tốc độ %1 đến cuối line rồi %2",
+      previousStatement: null,
+      nextStatement: null,
+      args0: [
+        { type: "input_value", name: "speed", check: "Number" },
+        {
+          type: "field_dropdown",
+          name: "stop",
+          options: [
+            ["phanh", "BRAKE"],
+            ["dừng", "STOP"],
+            ["không dừng", "None"]
+          ]
+        }
+      ],
+      inputsInline: true,
+      colour: KBotLinePIDColor,
+      tooltip: "Dò line bằng PID đến khi hết line",
+      helpUrl: ""
+    });
+  }
+};
+
+Blockly.Python['kbot_follow_line_pid_until_end'] = function (block) {
+  var speed = Blockly.Python.valueToCode(block, 'speed', Blockly.Python.ORDER_ATOMIC);
+  var stop = block.getFieldValue('stop');
+  var code = "await kbot.follow_line_pid_until_end(base_speed=" + speed + ", then=" + stop + ")\n";
+  return code;
+};
+
+// Block: kbot_follow_line_pid_by_time
+Blockly.Blocks['kbot_follow_line_pid_by_time'] = {
+  init: function () {
+    this.jsonInit({
+      type: "kbot_follow_line_pid_by_time",
+      message0: "KBOT dò line PID tốc độ %1 trong %2 giây rồi %3",
+      previousStatement: null,
+      nextStatement: null,
+      args0: [
+        { type: "input_value", name: "speed", check: "Number" },
+        { type: "input_value", name: "duration", check: "Number" },
+        {
+          type: "field_dropdown",
+          name: "stop",
+          options: [
+            ["phanh", "BRAKE"],
+            ["dừng", "STOP"],
+            ["không dừng", "None"]
+          ]
+        }
+      ],
+      inputsInline: true,
+      colour: KBotLinePIDColor,
+      tooltip: "Dò line bằng PID trong khoảng thời gian nhất định",
+      helpUrl: ""
+    });
+  }
+};
+
+Blockly.Python['kbot_follow_line_pid_by_time'] = function (block) {
+  var speed = Blockly.Python.valueToCode(block, 'speed', Blockly.Python.ORDER_ATOMIC);
+  var duration = Blockly.Python.valueToCode(block, 'duration', Blockly.Python.ORDER_ATOMIC);
+  var stop = block.getFieldValue('stop');
+  var code = "await kbot.follow_line_pid_by_time(" + duration + ", base_speed=" + speed + ", then=" + stop + ")\n";
+  return code;
+};

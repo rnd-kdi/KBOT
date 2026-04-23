@@ -90,29 +90,48 @@ class MotorDriverV2():
         return round(battery/10, 1)
     
     #################### ESP32 MOTOR CONTROL ##################
-    def _set_motors_esp(self, index, value=0):
-        value = max(min(100, value), -100)
-
-        if index == M3 and self.m3_speed == False:
+    def _stop_esp(self, index):
+        """Stop motor and ensure both pins are driven LOW before direction change"""
+        if index == M3:
+            self.m3_1.deinit()
+            self.m3_2.deinit()
             self.m3_1_pin.value(0)
             self.m3_2_pin.value(0)
-        
-        if index == M4 and self.m4_speed == False:
+        if index == M4:
+            self.m4_1.deinit()
+            self.m4_2.deinit()
             self.m4_1_pin.value(0)
             self.m4_2_pin.value(0)
 
+    def _set_motors_esp(self, index, value=0):
+        value = max(min(100, value), -100)
+        duty = int(translate(abs(value), 0, 100, 0, 1023))
+
+        # Detect direction change — must stop first to avoid H-bridge shoot-through
+        if index == M3:
+            going_forward = value >= 0
+            was_forward = self.m3_speed
+            if going_forward != was_forward:
+                self._stop_esp(index)
+        if index == M4:
+            going_forward = value >= 0
+            was_forward = self.m4_speed
+            if going_forward != was_forward:
+                self._stop_esp(index)
+
         if value >= 0:
             # Forward
-            duty = int(translate(abs(value), 0, 100, 0, 1023))
             if index == M3:
                 if self.m3_speed == True:
                     try:
                         self.m3_1.duty(duty)
                     except RuntimeError:
                         self.m3_2.deinit()
+                        self.m3_2_pin.value(0)
                         self.m3_1.init(freq=MOTOR_FREQ, duty=duty)
                 else: # need to reset PWM
                     self.m3_2.deinit()
+                    self.m3_2_pin.value(0)
                     self.m3_1.init(freq=MOTOR_FREQ, duty=duty)
                 self.m3_speed = True                
             if index == M4:
@@ -121,23 +140,26 @@ class MotorDriverV2():
                         self.m4_1.duty(duty)
                     except RuntimeError:
                         self.m4_2.deinit()
+                        self.m4_2_pin.value(0)
                         self.m4_1.init(freq=MOTOR_FREQ, duty=duty)
                 else: # need to reset PWM
                     self.m4_2.deinit()
+                    self.m4_2_pin.value(0)
                     self.m4_1.init(freq=MOTOR_FREQ, duty=duty)
                 self.m4_speed = True
         else:
             # Backward
-            duty = int(translate(abs(value), 0, 100, 0, 1023))
             if index == M3:
                 if self.m3_speed == False:
                     try:
                         self.m3_2.duty(duty)
                     except RuntimeError:
                         self.m3_1.deinit()
+                        self.m3_1_pin.value(0)
                         self.m3_2.init(freq=MOTOR_FREQ, duty=duty)
                 else: # need to reset PWM
                     self.m3_1.deinit()
+                    self.m3_1_pin.value(0)
                     self.m3_2.init(freq=MOTOR_FREQ, duty=duty)
                 self.m3_speed = False
             if index == M4:
@@ -146,9 +168,11 @@ class MotorDriverV2():
                         self.m4_2.duty(duty)
                     except RuntimeError:
                         self.m4_1.deinit()
+                        self.m4_1_pin.value(0)
                         self.m4_2.init(freq=MOTOR_FREQ, duty=duty)
                 else: # need to reset PWM
                     self.m4_1.deinit()
+                    self.m4_1_pin.value(0)
                     self.m4_2.init(freq=MOTOR_FREQ, duty=duty)
                 self.m4_speed = False
             

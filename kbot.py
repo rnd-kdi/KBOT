@@ -34,6 +34,15 @@ class KBot:
         # Line following state
         self._line_sensor = None
         self._last_line_state = LINE_CENTER
+        # Line PID state
+        self._lp_kp = 30.0
+        self._lp_ki = 0.0
+        self._lp_kd = 15.0
+        self._lp_err = 0
+        self._lp_lerr = 0
+        self._lp_int = 0
+        self._lp_imax = 50
+        self._lp_last_pos = 0
         # Vision tracking PID state
         self._tx_kp = 0.23
         self._tx_ki = 0
@@ -444,6 +453,110 @@ class KBot:
                     if counter <= 0:
                         break
             await asyncio.sleep_ms(10)
+        await self.stop_then(then)
+
+    # ============ Line Following PID ============
+
+    def line_pid_set(self, kp, ki, kd):
+        self._lp_kp = kp
+        self._lp_ki = ki
+        self._lp_kd = kd
+
+    def _line_pid_reset(self):
+        self._lp_err = 0
+        self._lp_lerr = 0
+        self._lp_int = 0
+
+    def _line_pid_update(self, base_speed):
+        if self._line_sensor is None:
+            return
+
+        pos = self._line_sensor.position(self._lp_last_pos)
+
+        if pos is None:
+            # intersection or all sensors active — go straight slowly
+            self.run_speed(self._min_speed, self._min_speed)
+            return LINE_CROSS
+
+        self._lp_last_pos = pos
+        self._lp_err = pos
+
+        # PID calculation
+        self._lp_int += self._lp_err
+        self._lp_int = max(-self._lp_imax, min(self._lp_imax, self._lp_int))
+        d = self._lp_err - self._lp_lerr
+        self._lp_lerr = self._lp_err
+
+        correction = self._lp_kp * self._lp_err + self._lp_ki * self._lp_int + self._lp_kd * d
+
+        left = base_speed + correction
+        right = base_speed - correction
+
+        left = max(-100, min(100, int(left)))
+        right = max(-100, min(100, int(right)))
+
+        self.run_speed(left, right)
+        return LINE_CENTER
+
+    async def follow_line_pid_until_cross(self, base_speed=None, then=STOP):
+        if base_speed is None:
+            base_speed = self._speed
+        self._line_pid_reset()
+        self._lp_last_pos = 0
+        cross_count = 0
+        was_cross = False
+
+        while True:
+            result = self._line_pid_update(base_speed)
+            if result == LINE_CROSS:
+                if not was_cross:
+                    cross_count += 1
+                    was_cross = True
+                    if cross_count >= 2:
+                        break
+            else:
+                was_cross = False
+            await asyncio.sleep_ms(5)
+
+        await self.stop_then(then)
+
+    async def follow_line_pid_until_end(self, base_speed=None, then=STOP):
+        if base_speed is None:
+            base_speed = self._speed
+        self._line_pid_reset()
+        self._lp_last_pos = 0
+        end_count = 0
+
+        while True:
+            pos = self._line_sensor.position(self._lp_last_pos)
+            if pos is None:
+                # intersection — go straight
+                self.run_speed(self._min_speed, self._min_speed)
+                await asyncio.sleep_ms(5)
+                continue
+            if pos == self._lp_last_pos and self._line_sensor.read() == (0, 0, 0, 0):
+                end_count += 1
+                if end_count >= 3:
+                    break
+            else:
+                end_count = 0
+                self._line_pid_update(base_speed)
+            await asyncio.sleep_ms(5)
+
+        await self.stop_then(then)
+
+    async def follow_line_pid_by_time(self, duration, base_speed=None, then=STOP):
+        if base_speed is None:
+            base_speed = self._speed
+        self._line_pid_reset()
+        self._lp_last_pos = 0
+        start = ticks_ms()
+        duration_ms = duration * 1000
+
+        while ticks_ms() - start < duration_ms:
+            self._line_pid_update(base_speed)
+            await asyncio.sleep_ms(5)
+
         await self.stop_then(then)
 
     # ============ Vision Tracking PID ============
