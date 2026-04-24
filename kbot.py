@@ -43,6 +43,22 @@ class KBot:
         self._lp_int = 0
         self._lp_imax = 50
         self._lp_last_pos = 0
+        # Camera line following PID state
+        self._cl_husky = None
+        self._cl_target_x = 160  # center of 320px
+        self._cl_kp = 0.3
+        self._cl_ki = 0.0
+        self._cl_kd = 0.2
+        self._cl_err = 0
+        self._cl_lerr = 0
+        self._cl_int = 0
+        self._cl_imax = 50
+        self._cl_running = False
+        self._cl_arrow = {"xo": 0, "yo": 0, "xt": 0, "yt": 0}
+        self._cl_base_speed = 0
+        self._cl_last_valid_xo = 160
+        self._cl_noise_count = 0
+        self._cl_stable_count = 0
         # Vision tracking PID state
         self._tx_kp = 0.23
         self._tx_ki = 0
@@ -558,6 +574,143 @@ class KBot:
             await asyncio.sleep_ms(5)
 
         await self.stop_then(then)
+
+    # ============ Camera Line Following ============
+
+    def set_camera(self, husky):
+        self._cl_husky = husky
+
+    def camera_line_pid_set(self, kp, ki, kd, target_x=160):
+        self._cl_kp = kp
+        self._cl_ki = ki
+        self._cl_kd = kd
+        self._cl_target_x = target_x
+
+    def _camera_line_pid_reset(self):
+        self._cl_err = 0
+        self._cl_lerr = 0
+        self._cl_int = 0
+        self._cl_last_valid_xo = self._cl_target_x
+        self._cl_noise_count = 0
+        self._cl_stable_count = 0
+
+    # Task 1: Read camera data (50ms)
+    async def _camera_read_loop(self):
+        while self._cl_running:
+            if self._cl_husky is not None:
+                self._cl_arrow = await self._cl_husky.get_arrow()
+            await asyncio.sleep_ms(50)
+
+    # Task 2: Camera line PID (50ms)
+    async def _camera_line_pid_loop(self):
+        while self._cl_running:
+            self._camera_line_pid_step()
+            await asyncio.sleep_ms(50)
+
+    def _camera_line_pid_step(self):
+        xo = self._cl_arrow["xo"]
+        yo = self._cl_arrow["yo"]
+        xt = self._cl_arrow["xt"]
+        yt = self._cl_arrow["yt"]
+        base_speed = self._cl_base_speed
+
+        # no line detected — keep last direction
+        if xo == 0 and yo == 0:
+            if self._cl_err != 0:
+                turn = base_speed * 0.5
+                if self._cl_err > 0:
+                    self.set_target_rpm(base_speed, max(0, base_speed - turn))
+                else:
+                    self.set_target_rpm(max(0, base_speed - turn), base_speed)
+            return
+
+        # Noise filter: if xo jumps >60px from last valid, likely noise
+        if abs(xo - self._cl_last_valid_xo) > 60:
+            self._cl_noise_count += 1
+            if self._cl_noise_count < 5:
+                # Use last valid position — ignore noise
+                xo = self._cl_last_valid_xo
+            else:
+                # Noise persisted >5 frames — accept new position
+                self._cl_last_valid_xo = xo
+                self._cl_noise_count = 0
+        else:
+            self._cl_last_valid_xo = xo
+            self._cl_noise_count = 0
+
+        # blend xt
+        if xt > 0 and yt > 0:
+            blend = min(yt / 240.0, 0.25)
+            x = xo * (1.0 - blend) + xt * blend
+        else:
+            x = xo
+
+        self._cl_err = x - self._cl_target_x
+
+        # Dead zone
+        if abs(self._cl_err) < 20:
+            self._cl_err = 0
+
+        # PID calculation
+        self._cl_int += self._cl_err
+        self._cl_int = max(-self._cl_imax, min(self._cl_imax, self._cl_int))
+        d = self._cl_err - self._cl_lerr
+        self._cl_lerr = self._cl_err
+
+        correction = self._cl_kp * self._cl_err + self._cl_ki * self._cl_int + self._cl_kd * d
+
+        # Stability tracking: count consecutive low-error frames
+        abs_err = abs(self._cl_err)
+        if abs_err < 25:
+            self._cl_stable_count = min(self._cl_stable_count + 1, 10)
+        else:
+            self._cl_stable_count = 0
+
+        # Adaptive speed with post-curve stabilization
+        if abs_err > 60:
+            actual_speed = base_speed * 0.4
+        elif abs_err > 20:
+            actual_speed = base_speed * (1.0 - 0.6 * (abs_err - 20) / 40.0)
+        elif self._cl_stable_count < 5:
+            # Just exited curve — not stable yet, stay at 70% speed
+            actual_speed = base_speed * 0.7
+        else:
+            actual_speed = base_speed
+
+        left = actual_speed + correction
+        right = actual_speed - correction
+
+        left = max(0, left)
+        right = max(0, right)
+
+        self.set_target_rpm(left, right)
+
+    def follow_line_camera_start(self, base_speed=None):
+        if base_speed is None:
+            base_speed = self._speed
+        self._cl_base_speed = base_speed
+        self._camera_line_pid_reset()
+        self._cl_running = True
+        asyncio.create_task(self._camera_read_loop())
+        asyncio.create_task(self._camera_line_pid_loop())
+
+    async def follow_line_camera_by_time(self, duration, base_speed=None, then=STOP):
+        self.follow_line_camera_start(base_speed)
+        start = ticks_ms()
+        duration_ms = duration * 1000
+        while ticks_ms() - start < duration_ms:
+            await asyncio.sleep_ms(100)
+        self.follow_line_camera_stop()
+        await self.stop_then(then)
+
+    async def follow_line_camera(self, base_speed=None):
+        self.follow_line_camera_start(base_speed)
+        while self._cl_running:
+            await asyncio.sleep_ms(100)
+
+    def follow_line_camera_stop(self):
+        self._cl_running = False
+        self.pid_stop()
 
     # ============ Vision Tracking PID ============
 

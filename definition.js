@@ -3059,3 +3059,123 @@ Blockly.Python['kbot_follow_line_pid_by_time'] = function (block) {
   var code = "await kbot.follow_line_pid_by_time(" + duration + ", base_speed=" + speed + ", then=" + stop + ")\n";
   return code;
 };
+
+// ============ KBOT Camera Line Following Blocks ============
+
+const KBotCameraLineColor = "#8B4513";
+
+// Block: kbot_camera_line_pid_set
+Blockly.Blocks['kbot_camera_line_pid_set'] = {
+  init: function () {
+    this.jsonInit({
+      type: "kbot_camera_line_pid_set",
+      message0: "KBOT dò line camera cài đặt target X %1 Kp %2 Ki %3 Kd %4",
+      previousStatement: null,
+      nextStatement: null,
+      args0: [
+        { type: "input_value", name: "target_x", check: "Number" },
+        { type: "input_value", name: "kp", check: "Number" },
+        { type: "input_value", name: "ki", check: "Number" },
+        { type: "input_value", name: "kd", check: "Number" }
+      ],
+      inputsInline: true,
+      colour: KBotCameraLineColor,
+      tooltip: "Cài đặt PID cho dò line bằng camera HuskyLens (target X = tâm line trên ảnh, mặc định 160)",
+      helpUrl: ""
+    });
+  }
+};
+
+Blockly.Python['kbot_camera_line_pid_set'] = function (block) {
+  var target_x = Blockly.Python.valueToCode(block, 'target_x', Blockly.Python.ORDER_ATOMIC);
+  var kp = Blockly.Python.valueToCode(block, 'kp', Blockly.Python.ORDER_ATOMIC);
+  var ki = Blockly.Python.valueToCode(block, 'ki', Blockly.Python.ORDER_ATOMIC);
+  var kd = Blockly.Python.valueToCode(block, 'kd', Blockly.Python.ORDER_ATOMIC);
+  var code = "kbot.set_camera(husky)\n";
+  code += "kbot.camera_line_pid_set(" + kp + ", " + ki + ", " + kd + ", target_x=" + target_x + ")\n";
+  return code;
+};
+
+// Block: kbot_follow_line_camera_by_time
+Blockly.Blocks['kbot_follow_line_camera_by_time'] = {
+  init: function () {
+    this.jsonInit({
+      type: "kbot_follow_line_camera_by_time",
+      message0: "KBOT dò line camera tốc độ %1 trong %2 giây rồi %3",
+      previousStatement: null,
+      nextStatement: null,
+      args0: [
+        { type: "input_value", name: "speed", check: "Number" },
+        { type: "input_value", name: "duration", check: "Number" },
+        {
+          type: "field_dropdown",
+          name: "stop",
+          options: [
+            ["phanh", "BRAKE"],
+            ["dừng", "STOP"],
+            ["không dừng", "None"]
+          ]
+        }
+      ],
+      inputsInline: true,
+      colour: KBotCameraLineColor,
+      tooltip: "Dò line bằng camera HuskyLens trong khoảng thời gian",
+      helpUrl: ""
+    });
+  }
+};
+
+Blockly.Python['kbot_follow_line_camera_by_time'] = function (block) {
+  var speed = Blockly.Python.valueToCode(block, 'speed', Blockly.Python.ORDER_ATOMIC);
+  var duration = Blockly.Python.valueToCode(block, 'duration', Blockly.Python.ORDER_ATOMIC);
+  var stop = block.getFieldValue('stop');
+  var code = "await kbot.follow_line_camera_by_time(" + duration + ", base_speed=" + speed + ", then=" + stop + ")\n";
+  return code;
+};
+
+// Block: kbot_follow_line_camera
+Blockly.Blocks['kbot_follow_line_camera'] = {
+  init: function () {
+    this.jsonInit({
+      type: "kbot_follow_line_camera",
+      message0: "KBOT dò line camera liên tục tốc độ %1",
+      previousStatement: null,
+      nextStatement: null,
+      args0: [
+        { type: "input_value", name: "speed", check: "Number" }
+      ],
+      inputsInline: true,
+      colour: KBotCameraLineColor,
+      tooltip: "Dò line bằng camera HuskyLens liên tục (dùng create_task, gọi kbot.follow_line_camera_stop() để dừng)",
+      helpUrl: ""
+    });
+  }
+};
+
+Blockly.Python['kbot_follow_line_camera'] = function (block) {
+  var speed = Blockly.Python.valueToCode(block, 'speed', Blockly.Python.ORDER_ATOMIC);
+  var code = "create_task(kbot.follow_line_camera(base_speed=" + speed + "))\n";
+  return code;
+};
+
+// Block: kbot_follow_line_camera_stop
+Blockly.Blocks['kbot_follow_line_camera_stop'] = {
+  init: function () {
+    this.jsonInit({
+      type: "kbot_follow_line_camera_stop",
+      message0: "KBOT dừng dò line camera",
+      previousStatement: null,
+      nextStatement: null,
+      args0: [],
+      inputsInline: true,
+      colour: KBotCameraLineColor,
+      tooltip: "Dừng dò line bằng camera",
+      helpUrl: ""
+    });
+  }
+};
+
+Blockly.Python['kbot_follow_line_camera_stop'] = function (block) {
+  var code = "kbot.follow_line_camera_stop()\n";
+  return code;
+};

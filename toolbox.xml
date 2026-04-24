@@ -253,6 +253,51 @@
           </shadow>
         </value>
       </block>
+
+      <sep gap="30"></sep>
+      <label text="Dò line Camera" web-class="blockLabelStyle"></label>
+      <block type="kbot_camera_line_pid_set">
+        <value name="target_x">
+          <shadow type="math_number">
+            <field name="NUM">160</field>
+          </shadow>
+        </value>
+        <value name="kp">
+          <shadow type="math_number">
+            <field name="NUM">0.3</field>
+          </shadow>
+        </value>
+        <value name="ki">
+          <shadow type="math_number">
+            <field name="NUM">0</field>
+          </shadow>
+        </value>
+        <value name="kd">
+          <shadow type="math_number">
+            <field name="NUM">0.2</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="kbot_follow_line_camera_by_time">
+        <value name="speed">
+          <shadow type="math_number">
+            <field name="NUM">50</field>
+          </shadow>
+        </value>
+        <value name="duration">
+          <shadow type="math_number">
+            <field name="NUM">30</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="kbot_follow_line_camera">
+        <value name="speed">
+          <shadow type="math_number">
+            <field name="NUM">50</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="kbot_follow_line_camera_stop" />
     </category>
   </category>
 
